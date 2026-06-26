@@ -1,0 +1,50 @@
+# Place this file at:  .github/workflows/wc-sync.yml
+# It refreshes wc-data.json on a schedule and commits it. With Pages set to
+# "Deploy from a branch", that commit republishes the site automatically.
+
+name: wc-sync
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"     # every 3 hours (UTC). Tighten during knockouts, e.g. "*/30 * * * *".
+  workflow_dispatch: {}        # adds a "Run workflow" button on the Actions tab
+
+permissions:
+  contents: write              # lets the job commit wc-data.json back to the repo
+
+concurrency:
+  group: wc-sync               # never run two syncs at once
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Refresh wc-data.json
+        env:
+          # Both optional. Add them under Settings > Secrets and variables > Actions.
+          # Polymarket needs no key. With no secrets set, the script still runs and
+          # falls back to its built-in priors, so the site never breaks.
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python wc_sync.py --out wc-data.json
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "wc-sync-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wc-data.json
+          if git diff --staged --quiet; then
+            echo "No change this run."
+          else
+            git commit -m "wc-data refresh $(date -u +%FT%TZ)"
+            git push
+          fi

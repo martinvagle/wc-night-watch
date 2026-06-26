@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Night Watch · World Cup wake-up planner (SGT)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
+:root{
+  --mid:#080d1b; --mid2:#0c1226; --panel:#111a36; --panel2:#16203f; --line:#243259;
+  --ice:#e8eefb; --dim:#9db0d6; --faint:#6b7da6;
+  --red:#ec1c34; --red2:#9d1424; --amber:#f4ad3e; --amber2:#7a5618; --blue:#5d8ff0; --frost:#4fd6ac;
+  --disp:'Anton',Impact,sans-serif; --head:'Archivo',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:var(--body); color:var(--ice); line-height:1.5; overflow-x:hidden;
+  background:var(--mid);
+  background-image:radial-gradient(1300px 640px at 78% -8%, #16224a 0%, var(--mid2) 46%, var(--mid) 100%);
+  background-attachment:fixed;
+}
+.nw-aurora{position:fixed;top:0;left:0;right:0;height:380px;z-index:0;pointer-events:none;
+  background:radial-gradient(620px 240px at 14% 0%, rgba(79,214,172,.10), transparent 70%),
+             radial-gradient(740px 260px at 68% 0%, rgba(93,143,240,.12), transparent 70%),
+             radial-gradient(520px 220px at 96% 12%, rgba(236,28,52,.08), transparent 70%);
+  filter:blur(4px);}
+.nw-wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:22px clamp(14px,3vw,34px) 60px}
+
+/* header */
+.nw-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.nw-brand{display:flex;align-items:center;gap:13px}
+.nw-moon{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:linear-gradient(160deg,#1c2a52,#0f1830);border:1px solid var(--line);color:#cdd9f5;box-shadow:0 0 22px rgba(93,143,240,.25)}
+.nw-brand h1{font-family:var(--disp);font-size:clamp(28px,4.8vw,44px);letter-spacing:.04em;margin:0;line-height:.92}
+.nw-brand p{margin:3px 0 0;color:var(--dim);font-size:12.5px}
+.nw-controls{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.nw-select span{display:block;font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.12em;margin:0 0 5px 3px}
+.nw-select-box{position:relative;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:0 34px 0 11px;height:44px}
+.nw-select-box:focus-within{border-color:var(--blue)}
+.nw-flag{font-size:18px;line-height:1}
+.nw-select select{appearance:none;background:transparent;border:0;color:var(--ice);font-family:var(--head);font-weight:700;font-size:14.5px;height:100%;padding-right:4px;outline:none;cursor:pointer;max-width:52vw}
+.nw-select option,.nw-select optgroup{background:var(--mid2);color:var(--ice)}
+.nw-chev{position:absolute;right:11px;color:var(--dim);pointer-events:none;display:flex}
+.nw-asof{font-size:12.5px;color:var(--dim);margin:6px 0 18px;max-width:780px}
+.nw-asof em{color:var(--frost);font-style:normal;font-weight:600}.nw-asof strong{color:var(--ice)}
+.nw-live{display:inline-flex;align-items:center;gap:6px;background:rgba(79,214,172,.14);border:1px solid rgba(79,214,172,.4);color:var(--frost);font-weight:700;font-size:11px;letter-spacing:.04em;padding:2px 9px;border-radius:999px;margin-right:8px}
+
+/* hero */
+.nw-hero{background:linear-gradient(165deg,var(--panel),var(--mid2));border:1px solid var(--line);border-radius:20px;padding:clamp(16px,2.6vw,26px);margin-bottom:22px;box-shadow:0 24px 60px -30px rgba(0,0,0,.7)}
+.nw-hero-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);background:rgba(236,28,52,.12);border:1px solid rgba(236,28,52,.3);padding:5px 10px;border-radius:999px;margin-bottom:16px}
+.nw-hero.solo .nw-hero-tag{color:#cfe0ff;background:rgba(93,143,240,.12);border-color:rgba(93,143,240,.3)}
+.nw-hero-vs{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.nw-big-flag{font-size:clamp(34px,6vw,50px);line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+.nw-vs-mid{flex:1;min-width:0}
+.nw-vs{display:block;font-family:var(--disp);font-size:clamp(22px,4vw,34px);letter-spacing:.02em;line-height:1}
+.nw-vs i{color:var(--faint);font-size:.6em;margin:0 .25em;vertical-align:.12em;font-style:normal}
+.nw-vs-when{display:inline-flex;align-items:center;gap:6px;color:var(--dim);font-size:13px;margin-top:6px}
+.nw-vs-when b{color:var(--amber);font-family:var(--mono)}
+.nw-hero-lead{color:#cdd9f1;font-size:14.5px;max-width:780px;margin:0}
+.nw-hero-lead b{color:var(--ice);font-weight:600}
+.nw-fork{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:20px}
+.nw-fork-col{border-radius:15px;padding:15px 15px 13px;border:1px solid var(--line);background:var(--panel2);position:relative;overflow:hidden}
+.nw-fork-col.win{border-color:rgba(236,28,52,.4);background:linear-gradient(165deg,rgba(236,28,52,.13),var(--panel2))}
+.nw-fork-col.lose{border-color:rgba(244,173,62,.34);background:linear-gradient(165deg,rgba(244,173,62,.1),var(--panel2))}
+.nw-fork-h{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:800;font-size:14px;letter-spacing:.02em;text-transform:uppercase}
+.nw-fork-h .dot{width:9px;height:9px;border-radius:50%}
+.win .nw-fork-h .dot{background:var(--red);box-shadow:0 0 10px var(--red)}
+.lose .nw-fork-h .dot{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+.nw-fork-prob{font-family:var(--disp);font-size:34px;line-height:1;margin:8px 0 11px}
+.nw-fork-prob small{font-family:var(--body);font-size:11px;color:var(--faint);margin-left:8px;letter-spacing:.04em;vertical-align:.5em}
+.win .nw-fork-prob{color:#ff7585}.lose .nw-fork-prob{color:var(--amber)}
+.nw-fork-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.nw-fork-col li{display:flex;gap:8px;align-items:flex-start;font-size:12.8px;color:#cdd9f1}
+.nw-fork-col li .ic{flex:none;margin-top:2px;color:var(--dim);display:flex}
+.nw-fork-col li b{color:var(--ice);font-weight:600}
+.nw-decider{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px;padding-top:15px;border-top:1px solid var(--line)}
+.nw-decider>span{font-size:12.5px;color:var(--dim)}
+.nw-deciderbtns{display:flex;gap:8px;flex-wrap:wrap}
+.nw-deciderbtns button{font-family:var(--head);font-weight:600;font-size:13px;padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--ice);cursor:pointer;transition:.15s}
+.nw-deciderbtns button:hover{border-color:var(--blue)}
+.nw-deciderbtns button.on.win{background:var(--red);border-color:var(--red);color:#fff}
+.nw-deciderbtns button.on.lose{background:var(--amber);border-color:var(--amber);color:#221603}
+.nw-deciderbtns button.ghost{background:transparent;color:var(--faint);border-style:dashed}
+
+/* rails */
+.nw-rails{display:flex;flex-direction:column;gap:18px;margin-bottom:24px}
+.rail{background:linear-gradient(180deg,var(--panel),var(--mid2));border:1px solid var(--line);border-radius:18px;padding:15px clamp(12px,2vw,18px) 17px}
+.rail.red{border-top:3px solid var(--red)}.rail.amber{border-top:3px solid var(--amber)}
+.rail-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:13px}
+.rail-title{font-family:var(--head);font-weight:800;font-size:16px;letter-spacing:.02em;display:flex;align-items:center;gap:9px}
+.rail-title em{font-style:normal;font-weight:500;font-size:12.5px;color:var(--dim);letter-spacing:0}
+.rail-pip{width:11px;height:11px;border-radius:3px}
+.red .rail-pip{background:var(--red);box-shadow:0 0 10px var(--red)}.amber .rail-pip{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+.rail-odds{font-size:12.5px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.rail-odds b{font-family:var(--mono);color:var(--frost);font-size:14px}
+.rail-track{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(172px,1fr);gap:11px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.rail-track::-webkit-scrollbar{height:7px}.rail-track::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+
+/* station */
+.stn{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:11px 11px 10px;display:flex;flex-direction:column;gap:8px;min-width:0;transition:.18s;position:relative}
+.stn.soft{opacity:.92}
+.stn.dead{opacity:.34;filter:grayscale(.6)}
+.stn.adv{border-color:rgba(79,214,172,.5);box-shadow:inset 0 0 0 1px rgba(79,214,172,.2)}
+.stn.lost{border-color:rgba(236,28,52,.5)}
+.stn-top{display:flex;justify-content:space-between;align-items:center}
+.stn-round{font-family:var(--disp);font-size:13px;letter-spacing:.08em;color:var(--faint)}
+.stn-flag{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px}
+.stn-flag.lk{background:rgba(79,214,172,.14);color:var(--frost)}
+.stn-flag.bn{background:rgba(157,176,214,.12);color:var(--dim)}
+.stn-flag.advf{background:rgba(79,214,172,.2);color:var(--frost);display:inline-flex;align-items:center;gap:3px}
+.stn-flag.out{background:rgba(236,28,52,.2);color:#ff8a96}
+.stn-time{font-family:var(--disp);font-size:28px;line-height:.95;letter-spacing:.01em;color:#fff;white-space:nowrap}
+.stn.blue .stn-time,.stn.frost .stn-time{color:var(--ice)}
+.stn-date{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:2px}
+
+/* night dial */
+.dial{position:relative;height:20px;margin:1px 0 2px}
+.dial-track{position:absolute;top:6px;left:0;right:0;height:5px;border-radius:99px;
+  background:linear-gradient(90deg,#0a1226 0%,#0a1226 25%, #243a6b 38%, #4a6196 50%, #243a6b 62%, #0a1226 75%, #0a1226 100%)}
+.dial-dot{position:absolute;top:3px;width:11px;height:11px;border-radius:50%;transform:translateX(-50%);border:2px solid #0c1226}
+.dial-dot[data-tone="red"]{background:var(--red);box-shadow:0 0 10px var(--red)}
+.dial-dot[data-tone="amber"]{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+.dial-dot[data-tone="blue"]{background:var(--blue);box-shadow:0 0 9px var(--blue)}
+.dial-dot[data-tone="frost"]{background:var(--frost);box-shadow:0 0 9px var(--frost)}
+.dial-ticks{position:absolute;top:13px;left:0;right:0;display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:#46577e}
+
+/* opponent + prob */
+.stn-opp{display:flex;align-items:center;gap:7px;margin-top:3px}
+.stn-flagimg{font-size:18px;line-height:1;flex:none}
+.stn-oppname{font-family:var(--head);font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stn-prob{display:flex;align-items:center;gap:8px}
+.stn-bar{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.stn-bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--frost))}
+.stn-pct{font-family:var(--mono);font-weight:700;font-size:12.5px;color:var(--ice);min-width:34px;text-align:right}
+.stn-sleep{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 0}
+.stn.red .stn-sleep{color:#ff8a96}.stn.amber .stn-sleep{color:var(--amber)}.stn.blue .stn-sleep{color:#9cc0ff}.stn.frost .stn-sleep{color:var(--frost)}
+.stn-venue{font-size:10.5px;color:var(--faint)}
+.stn-mark{display:flex;gap:6px;margin-top:3px}
+.stn-mark button{flex:1;font-size:11px;font-weight:600;padding:5px 0;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;transition:.13s}
+.stn-mark button:hover{border-color:var(--blue);color:var(--ice)}
+.stn-mark button.on.w{background:var(--frost);border-color:var(--frost);color:#06231a}
+.stn-mark button.on.l{background:var(--red);border-color:var(--red);color:#fff}
+
+/* sleep plan */
+.nw-sleep{margin-bottom:24px}
+.nw-sleep h2{font-family:var(--head);font-weight:800;font-size:18px;display:flex;align-items:center;gap:9px;margin:0 0 6px}
+.nw-sleep-lead{font-size:12.5px;color:var(--dim);margin:0 0 14px}
+.chip{font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;letter-spacing:.04em}
+.chip.locked{background:rgba(79,214,172,.16);color:var(--frost)}.chip.bonus{background:rgba(157,176,214,.14);color:var(--dim)}
+.nw-sleep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.slp{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px 15px}
+.slp h3{font-family:var(--head);font-weight:700;font-size:14px;margin:0 0 11px;color:var(--ice)}
+.slp ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.slp-row{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:11px;background:var(--panel2);border-left:3px solid var(--line)}
+.slp-row.red{border-left-color:var(--red)}.slp-row.amber{border-left-color:var(--amber)}.slp-row.blue{border-left-color:var(--blue)}.slp-row.frost{border-left-color:var(--frost)}
+.slp-date{display:flex;flex-direction:column;align-items:center;min-width:46px}
+.slp-day{font-family:var(--mono);font-size:10px;color:var(--faint);text-transform:uppercase}
+.slp-dt{font-family:var(--disp);font-size:17px;line-height:1;color:var(--ice)}
+.slp-mid{flex:1;min-width:0}
+.slp-match{font-family:var(--head);font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slp-sub{font-size:11.5px;color:var(--dim);margin-top:2px}
+.slp-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:999px;flex:none}
+.slp-tag.lk{background:rgba(79,214,172,.16);color:var(--frost)}.slp-tag.bn{background:rgba(157,176,214,.13);color:var(--dim)}
+
+/* tools */
+.nw-tools{margin-bottom:8px}
+.nw-acc{display:inline-flex;align-items:center;gap:9px;font-family:var(--head);font-weight:600;font-size:13.5px;color:var(--ice);background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 15px;cursor:pointer;transition:.15s}
+.nw-acc:hover{border-color:var(--blue)}
+.nw-acc .rot{transform:rotate(180deg)}.nw-acc .ic{transition:.2s;display:flex}
+.nw-ratings{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px}
+.nw-ratings>p{font-size:12.5px;color:var(--dim);margin:0 0 13px}
+.nw-ratings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:8px}
+.nw-rat{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:6px 8px 6px 10px}
+.nw-rat span{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nw-rat input{width:62px;background:var(--mid2);border:1px solid var(--line);border-radius:6px;color:var(--ice);font-family:var(--mono);font-size:12px;padding:4px 6px;text-align:right}
+.nw-rat input:focus{outline:none;border-color:var(--blue)}
+.nw-reset{margin-top:14px;font-size:12.5px;color:#ff8a96;background:transparent;border:1px dashed rgba(236,28,52,.4);border-radius:9px;padding:8px 14px;cursor:pointer}
+.nw-reset:hover{background:rgba(236,28,52,.08)}
+
+/* footer */
+.nw-foot{margin-top:26px;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:9px}
+.nw-foot p{font-size:12px;color:var(--dim);margin:0;max-width:900px}
+.nw-foot b{color:var(--ice);font-weight:600}
+.nw-fine{color:var(--faint)!important;font-size:11.5px!important}
+
+@media (max-width:620px){
+  .nw-fork{grid-template-columns:1fr}
+  .nw-select select{max-width:60vw}
+  .rail-track{grid-auto-columns:minmax(160px,78%)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="nw-aurora" aria-hidden="true"></div>
+<div class="nw-wrap" id="app"></div>
+
+<script>
+"use strict";
+
+/* ===========================================================================
+   CONFIG — where to load live data from.
+   - Leave as "wc-data.json" when the JSON sits next to this page (GitHub Pages).
+   - Or point at a raw URL to host the page anywhere and the data on GitHub, e.g.
+     "https://raw.githubusercontent.com/<user>/<repo>/main/wc-data.json"
+   =========================================================================== */
+var DATA_URL = "wc-data.json";
+
+/* ---------------- icons (compact inline SVG) ---------------- */
+var PATHS = {
+  moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  chevron:'<path d="M6 9l6 6 6-6"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  bed:'<path d="M2 4v16M2 9h18a2 2 0 0 1 2 2v9M2 16h20M6 9V5h12v4"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  swords:'<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5 18 3h3v3l-3.5 3.5"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22V15"/>',
+  trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22M14 14.7V17c0 .6.5 1 1 1.2 1.2.5 2 2 2 3.8M18 2H6v7a6 6 0 0 0 12 0z"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'
+};
+function I(name, size){ size = size || 14; return '<svg class="ic" viewBox="0 0 24 24" width="'+size+'" height="'+size+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle">'+(PATHS[name]||'')+'</svg>'; }
+
+/* ---------------- data ---------------- */
+var TEAMS = {
+  MEX:{n:"Mexico",f:"🇲🇽",r:1860}, RSA:{n:"South Africa",f:"🇿🇦",r:1775}, KOR:{n:"South Korea",f:"🇰🇷",r:1835},
+  SUI:{n:"Switzerland",f:"🇨🇭",r:1895}, CAN:{n:"Canada",f:"🇨🇦",r:1835}, BIH:{n:"Bosnia & H.",f:"🇧🇦",r:1815},
+  BRA:{n:"Brazil",f:"🇧🇷",r:2035}, MAR:{n:"Morocco",f:"🇲🇦",r:1945}, SCO:{n:"Scotland",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",r:1825},
+  USA:{n:"USA",f:"🇺🇸",r:1850}, TUR:{n:"Türkiye",f:"🇹🇷",r:1845}, PAR:{n:"Paraguay",f:"🇵🇾",r:1785},
+  GER:{n:"Germany",f:"🇩🇪",r:1985}, CIV:{n:"Ivory Coast",f:"🇨🇮",r:1860}, ECU:{n:"Ecuador",f:"🇪🇨",r:1865},
+  NED:{n:"Netherlands",f:"🇳🇱",r:1995}, JPN:{n:"Japan",f:"🇯🇵",r:1900}, SWE:{n:"Sweden",f:"🇸🇪",r:1875},
+  BEL:{n:"Belgium",f:"🇧🇪",r:1945}, EGY:{n:"Egypt",f:"🇪🇬",r:1815}, IRN:{n:"Iran",f:"🇮🇷",r:1815},
+  ESP:{n:"Spain",f:"🇪🇸",r:2095}, URU:{n:"Uruguay",f:"🇺🇾",r:1975}, KSA:{n:"Saudi Arabia",f:"🇸🇦",r:1760},
+  NOR:{n:"Norway",f:"🇳🇴",r:1945}, FRA:{n:"France",f:"🇫🇷",r:2045}, SEN:{n:"Senegal",f:"🇸🇳",r:1910},
+  ARG:{n:"Argentina",f:"🇦🇷",r:2060}, AUT:{n:"Austria",f:"🇦🇹",r:1865}, ALG:{n:"Algeria",f:"🇩🇿",r:1820},
+  POR:{n:"Portugal",f:"🇵🇹",r:2005}, COL:{n:"Colombia",f:"🇨🇴",r:1935}, COD:{n:"DR Congo",f:"🇨🇩",r:1785},
+  ENG:{n:"England",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",r:2025}, CRO:{n:"Croatia",f:"🇭🇷",r:1955}, GHA:{n:"Ghana",f:"🇬🇭",r:1805}
+};
+var THIRD_RATING = 1825;
+var GROUP_SEEDS = {
+  A:["MEX","RSA","KOR"], B:["SUI","CAN","BIH"], C:["BRA","MAR","SCO"], D:["USA","TUR","PAR"],
+  E:["GER","CIV","ECU"], F:["NED","JPN","SWE"], G:["BEL","EGY","IRN"], H:["ESP","URU","KSA"],
+  I:["FRA","NOR","SEN"], J:["ARG","AUT","ALG"], K:["POR","COL","COD"], L:["ENG","CRO","GHA"]
+};
+function Pp(g,p){return {t:"pos",g:g,p:p};}
+function Th(pool){return {t:"third",pool:pool};}
+function Wn(m){return {t:"win",m:m};}
+var SLOTS = {
+  73:{round:"R32",utc:"2026-06-28T19:00:00Z",venue:"Los Angeles", a:Pp("A",2), b:Pp("B",2)},
+  74:{round:"R32",utc:"2026-06-29T17:00:00Z",venue:"Houston",     a:Pp("C",1), b:Pp("F",2)},
+  75:{round:"R32",utc:"2026-06-29T20:30:00Z",venue:"Boston",      a:Pp("E",1), b:Th(["A","B","C","D","F"])},
+  76:{round:"R32",utc:"2026-06-30T01:00:00Z",venue:"Monterrey",   a:Pp("F",1), b:Pp("C",2)},
+  77:{round:"R32",utc:"2026-06-30T17:00:00Z",venue:"Dallas",      a:Pp("E",2), b:Pp("I",2)},
+  78:{round:"R32",utc:"2026-06-30T21:00:00Z",venue:"New York NJ", a:Pp("I",1), b:Th(["C","D","F","G","H"])},
+  79:{round:"R32",utc:"2026-07-01T01:00:00Z",venue:"Mexico City", a:Pp("A",1), b:Th(["C","E","F","H","I"])},
+  80:{round:"R32",utc:"2026-07-01T16:00:00Z",venue:"Atlanta",     a:Pp("L",1), b:Th(["E","H","I","J","K"])},
+  81:{round:"R32",utc:"2026-07-01T20:00:00Z",venue:"Seattle",     a:Pp("G",1), b:Th(["A","E","H","I","J"])},
+  82:{round:"R32",utc:"2026-07-02T00:00:00Z",venue:"SF Bay Area", a:Pp("D",1), b:Th(["B","E","F","I","J"])},
+  83:{round:"R32",utc:"2026-07-02T19:00:00Z",venue:"Los Angeles", a:Pp("H",1), b:Pp("J",2)},
+  84:{round:"R32",utc:"2026-07-02T23:00:00Z",venue:"Toronto",     a:Pp("K",2), b:Pp("L",2)},
+  85:{round:"R32",utc:"2026-07-03T03:00:00Z",venue:"Vancouver",   a:Pp("B",1), b:Th(["E","F","G","I","J"])},
+  86:{round:"R32",utc:"2026-07-03T18:00:00Z",venue:"Dallas",      a:Pp("D",2), b:Pp("G",2)},
+  87:{round:"R32",utc:"2026-07-03T22:00:00Z",venue:"Miami",       a:Pp("J",1), b:Pp("H",2)},
+  88:{round:"R32",utc:"2026-07-04T01:30:00Z",venue:"Kansas City", a:Pp("K",1), b:Th(["D","E","I","J","L"])},
+  89:{round:"R16",utc:"2026-07-04T17:00:00Z",venue:"Houston",     a:Wn(73), b:Wn(75)},
+  90:{round:"R16",utc:"2026-07-04T21:00:00Z",venue:"Philadelphia",a:Wn(74), b:Wn(77)},
+  91:{round:"R16",utc:"2026-07-05T20:00:00Z",venue:"New York NJ", a:Wn(76), b:Wn(78)},
+  92:{round:"R16",utc:"2026-07-06T00:00:00Z",venue:"Mexico City", a:Wn(79), b:Wn(80)},
+  93:{round:"R16",utc:"2026-07-06T19:00:00Z",venue:"Dallas",      a:Wn(83), b:Wn(84)},
+  94:{round:"R16",utc:"2026-07-07T00:00:00Z",venue:"Seattle",     a:Wn(81), b:Wn(82)},
+  95:{round:"R16",utc:"2026-07-07T16:00:00Z",venue:"Atlanta",     a:Wn(86), b:Wn(88)},
+  96:{round:"R16",utc:"2026-07-07T20:00:00Z",venue:"Vancouver",   a:Wn(85), b:Wn(87)},
+  97:{round:"QF", utc:"2026-07-09T20:00:00Z",venue:"Boston",      a:Wn(89), b:Wn(90)},
+  98:{round:"QF", utc:"2026-07-11T21:00:00Z",venue:"Miami",       a:Wn(91), b:Wn(92)},
+  99:{round:"QF", utc:"2026-07-10T19:00:00Z",venue:"Los Angeles", a:Wn(93), b:Wn(94)},
+  100:{round:"QF",utc:"2026-07-12T01:00:00Z",venue:"Kansas City", a:Wn(95), b:Wn(96)},
+  101:{round:"SF",utc:"2026-07-14T19:00:00Z",venue:"Dallas",      a:Wn(97), b:Wn(98)},
+  102:{round:"SF",utc:"2026-07-15T19:00:00Z",venue:"Atlanta",     a:Wn(99), b:Wn(100)},
+  103:{round:"F", utc:"2026-07-19T19:00:00Z",venue:"New York NJ", a:Wn(101),b:Wn(102)}
+};
+var PARENT = {73:89,75:89,74:90,77:90,76:91,78:91,79:92,80:92,83:93,84:93,81:94,82:94,86:95,88:95,85:96,87:96,89:97,90:97,91:98,92:98,93:99,94:99,95:100,96:100,97:101,98:101,99:102,100:102,101:103,102:103};
+var ROUND_SHORT = {R32:"R32", R16:"R16", QF:"QF", SF:"SF", F:"FINAL"};
+/* Eight best third-placed teams advance. Which groups' thirds qualify + which R32 slot
+   they fill is set by a FIFA lookup table that only resolves once the group stage ends.
+   Below is a plausible projection (Senegal's 0–3 pt third is excluded); both are labelled
+   "projected" in the UI and the slot dates/times are exact regardless of who fills them. */
+var THIRD_QUAL = ["A","B","C","E","F","G","J","L"];
+var THIRD_BY_MATCH = {75:"A", 78:"F", 79:"C", 80:"E", 81:"J", 82:"B", 85:"G", 88:"L"};
+function attachThirds(map){ THIRD_BY_MATCH=map; Object.keys(SLOTS).forEach(function(m){ var s=SLOTS[m]; [s.a,s.b].forEach(function(side){ if(side.t==="third") side.g3=map[m]; }); }); }
+attachThirds(THIRD_BY_MATCH);
+
+/* ---------------- state ---------------- */
+var STORE_KEY = "wc-nightwatch-html-v1";
+var state = { team:"NOR", ratings:{}, results:{}, groupResult:null, posView:2, openRatings:false };
+function load(){
+  try{ var raw = localStorage.getItem(STORE_KEY); if(raw){ var s=JSON.parse(raw);
+    if(s.team) state.team=s.team; if(s.ratings) state.ratings=s.ratings; if(s.results) state.results=s.results;
+    if(s.groupResult!==undefined) state.groupResult=s.groupResult; if(s.posView) state.posView=s.posView;
+    if(s.openRatings!==undefined) state.openRatings=s.openRatings; } }catch(e){}
+}
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+
+/* ---------------- helpers ---------------- */
+function ratingOf(code){ if(typeof code==="string" && code.indexOf("T:")===0) return THIRD_RATING; if(state.ratings[code]!=null) return state.ratings[code]; return (TEAMS[code]&&TEAMS[code].r)||1800; }
+function winProb(a,b){ return 1/(1+Math.pow(10, -(ratingOf(a)-ratingOf(b))/400)); }
+function thirdName(pool){ return "3rd · "+pool.join("/"); }
+function nameOf(code){ if(typeof code==="string" && code.indexOf("T:")===0) return code.slice(2); return (TEAMS[code]&&TEAMS[code].n)||code; }
+function flagOf(code){ if(typeof code==="string" && code.indexOf("T:")===0) return "🎲"; return (TEAMS[code]&&TEAMS[code].f)||"•"; }
+function teamGroupPos(code){ var gs=Object.keys(GROUP_SEEDS); for(var i=0;i<gs.length;i++){ var g=gs[i]; var idx=GROUP_SEEDS[g].indexOf(code); if(idx===0) return {g:g,pos:1}; if(idx===1) return {g:g,pos:2}; if(idx===2) return {g:g,pos:3}; } return null; }
+function fmtSGT(utc){ var d=new Date(utc); var o={timeZone:"Asia/Singapore"};
+  return { weekday:d.toLocaleString("en-GB",Object.assign({},o,{weekday:"short"})),
+    date:d.toLocaleString("en-GB",Object.assign({},o,{day:"numeric",month:"short"})),
+    time:d.toLocaleString("en-US",Object.assign({},o,{hour:"numeric",minute:"2-digit",hour12:true})),
+    hour:Number(d.toLocaleString("en-GB",Object.assign({},o,{hour:"2-digit",hour12:false}))) }; }
+function sleepVerdict(hour){
+  if(hour>=0&&hour<3)  return {tag:"Broken night",   tone:"amber", icon:"moon", protect:"Soft start next day", blurb:"Wraps before dawn — back to bed, but the night's halved."};
+  if(hour>=3&&hour<9)  return {tag:"Morning wrecker", tone:"red",  icon:"bed",  protect:"Clear the morning",    blurb:"Dead-of-night kickoff, finishes mid-morning. Move the meeting."};
+  if(hour>=9&&hour<12) return {tag:"Office clash",    tone:"blue", icon:"clock",protect:"Block the morning",    blurb:"Lands in working hours SGT."};
+  return {tag:"Civil hour", tone:"frost", icon:"sun", protect:"No reschedule", blurb:"A sane hour in Singapore."};
+}
+
+/* ---------------- bracket engine ---------------- */
+function buildPath(selected, assumedPos){
+  var tgp = teamGroupPos(selected); if(!tgp) return [];
+  var seeds={}; var gk=Object.keys(GROUP_SEEDS); for(var i=0;i<gk.length;i++){ seeds[gk[i]]=GROUP_SEEDS[gk[i]].slice(); }
+  var arr=seeds[tgp.g]; var cur=arr.indexOf(selected); var want=assumedPos-1;
+  if(cur>=0 && cur!==want && want<arr.length){ var tmp=arr[want]; arr[want]=selected; arr[cur]=tmp; }
+  var memo={};
+  function resolveTeam(d){ return d.t==="pos" ? seeds[d.g][d.p-1] : d.t==="third" ? ((d.g3 && seeds[d.g3]) ? seeds[d.g3][2] : ("T:"+thirdName(d.pool))) : resolveWinner(d.m); }
+  function resolveWinner(m){ if(memo[m]) return memo[m]; if(state.results[m]) { memo[m]=state.results[m]; return memo[m]; }
+    var s=SLOTS[m]; var a=resolveTeam(s.a); var b=resolveTeam(s.b); var w= ratingOf(a)>=ratingOf(b)?a:b; memo[m]=w; return w; }
+  function sideIsTeam(side){ return assumedPos<=2 ? (side.t==="pos"&&side.g===tgp.g&&side.p===assumedPos) : (side.t==="third"&&side.g3===tgp.g); }
+  var m0=null, keys=Object.keys(SLOTS);
+  for(var k=0;k<keys.length;k++){ var s=SLOTS[keys[k]]; if(s.round!=="R32") continue;
+    if(sideIsTeam(s.a)||sideIsTeam(s.b)) m0=Number(keys[k]); }
+  if(!m0) return [];
+  var path=[]; var m=m0; var cameFrom=null;
+  while(m){ var sl=SLOTS[m]; var opp;
+    if(sl.round==="R32"){ var aIsTeam=sideIsTeam(sl.a); opp=resolveTeam(aIsTeam?sl.b:sl.a); }
+    else { var c1=sl.a.m, c2=sl.b.m; opp=resolveWinner(c1===cameFrom?c2:c1); }
+    path.push({round:sl.round, m:m, utc:sl.utc, venue:sl.venue, opp:opp});
+    cameFrom=m; m=PARENT[m];
+  }
+  var reach=1, eliminatedAt=-1;
+  for(var p=0;p<path.length;p++){ var st=path[p];
+    st.reach=reach; st.win=winProb(selected, st.opp); st.locked=reach>=0.5;
+    var r=state.results[st.m];
+    if(r && r!==selected && eliminatedAt<0) eliminatedAt=p;
+    st.advanced=(r===selected); st.lost=(!!r && r!==selected);
+    reach*=st.win;
+  }
+  path.eliminatedAt=eliminatedAt;
+  return path;
+}
+
+/* ---------------- render pieces ---------------- */
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function nightDialHTML(hour, tone){
+  var left=(hour/24)*100;
+  return '<div class="dial" title="'+hour+':00 SGT"><div class="dial-track"></div>'+
+    '<div class="dial-dot" data-tone="'+tone+'" style="left:'+left+'%"></div>'+
+    '<div class="dial-ticks"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div></div>';
+}
+function stationHTML(st, elim){
+  var s=fmtSGT(st.utc), v=sleepVerdict(s.hour);
+  var dead = elim>=0 && st._i>elim;
+  var cls="stn "+v.tone+(dead?" dead":"")+(st.lost?" lost":"")+(st.advanced?" adv":"")+(st.locked?"":" soft");
+  var flag = st.advanced ? '<span class="stn-flag advf">'+I("check",11)+' through</span>'
+    : st.lost ? '<span class="stn-flag out">out</span>'
+    : (!dead ? '<span class="stn-flag '+(st.locked?"lk":"bn")+'">'+(st.locked?"likely":"dream")+'</span>' : '');
+  var wonOn = st.advanced?" on w":"", lostOn = st.lost?" on l":"";
+  var wonAct = st.advanced?"clear":"won", lostAct = st.lost?"clear":"lost";
+  return '<div class="'+cls+'">'+
+    '<div class="stn-top"><span class="stn-round">'+ROUND_SHORT[st.round]+'</span>'+flag+'</div>'+
+    '<div><div class="stn-time">'+s.time+'</div><div class="stn-date">'+s.weekday+' '+s.date+'</div></div>'+
+    nightDialHTML(s.hour, v.tone)+
+    '<div class="stn-opp"><span class="stn-flagimg">'+flagOf(st.opp)+'</span><span class="stn-oppname">'+esc(nameOf(st.opp))+'</span></div>'+
+    '<div class="stn-prob"><div class="stn-bar"><span style="width:'+Math.round(st.win*100)+'%"></span></div><span class="stn-pct">'+Math.round(st.win*100)+'%</span></div>'+
+    '<div class="stn-sleep">'+I(v.icon,12)+' '+v.tag+'</div>'+
+    '<div class="stn-venue">'+st.venue+'</div>'+
+    '<div class="stn-mark">'+
+      '<button class="'+wonOn.trim()+'" data-act="'+wonAct+'" data-m="'+st.m+'">Won</button>'+
+      '<button class="'+lostOn.trim()+'" data-act="'+lostAct+'" data-m="'+st.m+'" data-opp="'+esc(st.opp)+'">Lost</button>'+
+    '</div>'+
+  '</div>';
+}
+function railHTML(title, sub, accent, path){
+  if(!path||!path.length) return "";
+  for(var i=0;i<path.length;i++) path[i]._i=i;
+  var reachFinal = path.length ? path[path.length-1].reach : 0;
+  var elim = path.eliminatedAt;
+  var stns = path.map(function(st){ return stationHTML(st, elim); }).join("");
+  return '<div class="rail '+accent+'">'+
+    '<div class="rail-head"><div class="rail-title"><span class="rail-pip"></span> '+title+' <em>· '+sub+'</em></div>'+
+    '<div class="rail-odds">'+I("trophy",13)+' reach the final <b>'+(reachFinal*100).toFixed(1)+'%</b></div></div>'+
+    '<div class="rail-track">'+stns+'</div></div>';
+}
+function sleepListHTML(title, path){
+  if(!path||!path.length) return "";
+  var elim=path.eliminatedAt;
+  var rows = path.map(function(st,i){
+    var s=fmtSGT(st.utc), v=sleepVerdict(s.hour); var dead = elim>=0 && i>elim; if(dead) return "";
+    return '<li class="slp-row '+v.tone+'">'+
+      '<div class="slp-date"><span class="slp-day">'+s.weekday+'</span><span class="slp-dt">'+s.date+'</span></div>'+
+      '<div class="slp-mid"><div class="slp-match">'+ROUND_SHORT[st.round]+' · '+flagOf(st.opp)+' '+esc(nameOf(st.opp))+'</div>'+
+      '<div class="slp-sub">kickoff '+s.time+' · '+v.protect+'</div></div>'+
+      '<span class="slp-tag '+(st.locked?"lk":"bn")+'">'+(st.locked?"likely":"dream")+'</span></li>';
+  }).join("");
+  return '<div class="slp"><h3>'+esc(title)+'</h3><ul>'+rows+'</ul></div>';
+}
+
+function heroHTML(){
+  var isNor = state.team==="NOR";
+  if(isNor){
+    var fw = winProb("NOR","FRA");
+    var gr = state.groupResult;
+    return '<section class="nw-hero">'+
+      '<div class="nw-hero-tag">'+I("flag",13)+' Tonight · the fork</div>'+
+      '<div class="nw-hero-vs"><span class="nw-big-flag">🇳🇴</span>'+
+        '<div class="nw-vs-mid"><span class="nw-vs">Norway <i>vs</i> France</span>'+
+        '<span class="nw-vs-when">'+I("cal",14)+' Sat 27 Jun · <b>3:00 AM SGT</b> · Boston</span></div>'+
+        '<span class="nw-big-flag">🇫🇷</span></div>'+
+      '<p class="nw-hero-lead">You\'re already in the Round of 32 — beating Senegal saw to that. Tonight isn\'t about survival, it decides <b>who you steer into</b>. France leads on goal difference, so a <b>draw sends them top</b>: for Norway it\'s <b>win = 1st, draw or loss = 2nd</b>.</p>'+
+      '<div class="nw-fork">'+
+        '<div class="nw-fork-col win"><div class="nw-fork-h"><span class="dot"></span> WIN → top Group I</div>'+
+          '<div class="nw-fork-prob">'+Math.round(fw*100)+'%<small>model chance</small></div>'+
+          '<ul><li>'+I("check",13)+' R32 vs <b>Sweden</b> (Group F 3rd, proj.) — the soft landing</li>'+
+          '<li>'+I("check",13)+' dodges the Brazil / Germany half</li>'+
+          '<li>'+I("clock",13)+' R32 kicks off <b>5:00 AM SGT, Wed 1 Jul</b></li></ul></div>'+
+        '<div class="nw-fork-col lose"><div class="nw-fork-h"><span class="dot"></span> DRAW / LOSS → 2nd</div>'+
+          '<div class="nw-fork-prob">'+Math.round((1-fw)*100)+'%<small>model chance</small></div>'+
+          '<ul><li>'+I("swords",13)+' R32 vs <b>Ivory Coast</b> (Group E runner-up, proj.)</li>'+
+          '<li>'+I("swords",13)+' then likely <b>Brazil</b> (R16) and <b>Germany</b> (QF)</li>'+
+          '<li>'+I("clock",13)+' R32 kicks off <b>1:00 AM SGT, Wed 1 Jul</b></li></ul></div>'+
+      '</div>'+
+      '<div class="nw-decider"><span>Game\'s done? Lock it in:</span><div class="nw-deciderbtns">'+
+        '<button class="'+(gr==="first"?"on win":"")+'" data-act="g-first">Won → 1st</button>'+
+        '<button class="'+(gr==="second"?"on lose":"")+'" data-act="g-second">Drew / Lost → 2nd</button>'+
+        (gr?'<button class="ghost" data-act="g-reset">reset</button>':'')+
+      '</div></div></section>';
+  } else {
+    var t=TEAMS[state.team]; var g=teamGroupPos(state.team); var bp=g?g.pos:2;
+    var ord = state.posView===1?"1st":state.posView===3?"3rd":"2nd";
+    var decider = (bp===3)
+      ? '<div class="nw-decider"><span>Path assumes '+esc(t.n)+' grabs one of the eight best third-place spots — itself a projection.</span></div>'
+      : '<div class="nw-decider"><span>Assume finish:</span><div class="nw-deciderbtns">'+
+        '<button class="'+(state.posView===1?"on win":"")+'" data-act="pos-1">1st</button>'+
+        '<button class="'+(state.posView===2?"on lose":"")+'" data-act="pos-2">2nd</button></div></div>';
+    return '<section class="nw-hero solo">'+
+      '<div class="nw-hero-tag">'+I("flag",13)+' '+esc(t.n)+'\'s road</div>'+
+      '<div class="nw-hero-vs"><span class="nw-big-flag">'+t.f+'</span>'+
+        '<div class="nw-vs-mid"><span class="nw-vs">'+esc(t.n)+'</span>'+
+        '<span class="nw-vs-when">Projected to finish '+ord+' in Group '+(g?g.g:"?")+(bp===3?' · qualifying 3rd':'')+'</span></div></div>'+
+      '<p class="nw-hero-lead">'+(bp===3
+        ? 'Third-place qualification is a projection, so this whole road is conditional — but the kickoff <b>dates and SGT times</b> for each slot are exact.'
+        : 'Toggle the group finish to see how the draw — and your bedtime — changes. Past the next game, opponents are the most-likely bracket.')+'</p>'+
+      decider+'</section>';
+  }
+}
+
+function railsHTML(){
+  var isNor = state.team==="NOR";
+  if(isNor){
+    var showF1 = state.groupResult!=="second"; // dream
+    var showF2 = state.groupResult!=="first";  // realistic
+    var out="";
+    if(showF2) out += railHTML("Realistic","finish 2nd — the Brazil/Germany road","amber", buildPath("NOR",2));
+    if(showF1) out += railHTML("Dream run","top the group — the softer half","red", buildPath("NOR",1));
+    return out;
+  } else {
+    var title = state.posView===1?"If they top the group":state.posView===3?"If they sneak through 3rd":"If they finish 2nd";
+    return railHTML(title,"projected bracket","red", buildPath(state.team, state.posView));
+  }
+}
+function sleepHTML(){
+  var isNor=state.team==="NOR"; var grid="";
+  if(isNor){
+    var showF1=state.groupResult!=="second", showF2=state.groupResult!=="first";
+    if(showF2) grid += sleepListHTML("If 2nd (realistic)", buildPath("NOR",2));
+    if(showF1) grid += sleepListHTML("If 1st (dream run)", buildPath("NOR",1));
+  } else {
+    grid = sleepListHTML(TEAMS[state.team].n+" — projected", buildPath(state.team, state.posView));
+  }
+  return '<section class="nw-sleep"><h2>'+I("bed",18)+' Mornings to protect</h2>'+
+    '<p class="nw-sleep-lead">Matches end roughly two hours after kickoff. <span class="chip locked">Likely</span> = more probable than not you\'ll be up for it. <span class="chip bonus">Dream-run</span> = only if the run keeps going.</p>'+
+    '<div class="nw-sleep-grid">'+grid+'</div></section>';
+}
+
+function renderDyn(){
+  document.getElementById("dyn").innerHTML = heroHTML() + '<div class="nw-rails">'+railsHTML()+'</div>' + sleepHTML();
+}
+function renderPanel(){
+  var wrap=document.getElementById("ratingsWrap");
+  if(!state.openRatings){ wrap.innerHTML=""; return; }
+  var codes=Object.keys(TEAMS).sort(function(a,b){return ratingOf(b)-ratingOf(a);});
+  var rows=codes.map(function(c){ return '<label class="nw-rat"><span>'+TEAMS[c].f+' '+esc(TEAMS[c].n)+'</span>'+
+    '<input class="nw-rat-input" type="number" step="5" value="'+ratingOf(c)+'" data-code="'+c+'"></label>'; }).join("");
+  wrap.innerHTML = '<div class="nw-ratings"><p>Nudge any rating (Elo-style) to bend the odds toward your own read — injuries, form, gut feel. Higher = stronger.</p>'+
+    '<div class="nw-ratings-grid">'+rows+'</div>'+
+    '<button class="nw-reset" data-act="reset-all">Reset everything</button></div>';
+}
+
+/* ---------------- shell + events ---------------- */
+function selectOptions(){
+  var opts="";
+  Object.keys(GROUP_SEEDS).forEach(function(g){
+    opts += '<optgroup label="Group '+g+'">';
+    var picks = GROUP_SEEDS[g].slice(0,2);
+    if(THIRD_QUAL.indexOf(g)>=0 && GROUP_SEEDS[g][2]) picks.push(GROUP_SEEDS[g][2]);
+    picks.forEach(function(c, idx){ if(!TEAMS[c]) return; opts += '<option value="'+c+'">'+TEAMS[c].f+' '+TEAMS[c].n+(idx===2?' · 3rd (proj.)':'')+'</option>'; });
+    opts += '</optgroup>';
+  });
+  return opts;
+}
+function rebuildSelect(){
+  var sel=document.getElementById("teamSelect"); if(!sel) return;
+  var cur=state.team; sel.innerHTML=selectOptions(); sel.value=cur;
+}
+function buildShell(){
+  document.getElementById("app").innerHTML =
+    '<header class="nw-head">'+
+      '<div class="nw-brand"><span class="nw-moon">'+I("moon",20)+'</span>'+
+        '<div><h1>NIGHT&nbsp;WATCH</h1><p>World Cup wake-up planner · all times Singapore (SGT)</p></div></div>'+
+      '<div class="nw-controls"><label class="nw-select"><span>Following</span>'+
+        '<div class="nw-select-box"><span class="nw-flag" id="brandFlag"></span>'+
+          '<select id="teamSelect">'+selectOptions()+'</select><span class="nw-chev">'+I("chevron",16)+'</span></div></label></div>'+
+    '</header>'+
+    '<div class="nw-asof"><span id="livePill" class="nw-live" style="display:none"></span>Snapshot: <strong>Fri 26 Jun 2026</strong>, group stage almost done. Opponents past the next match — and which third-placed teams qualify and where they slot in — are <em>projected</em> and sharpen as results land.</div>'+
+    '<div id="dyn"></div>'+
+    '<section class="nw-tools"><button class="nw-acc" data-act="toggle-ratings">'+I("shield",15)+' Tune team strength '+I("chevron",15)+'</button><div id="ratingsWrap"></div></section>'+
+    '<footer class="nw-foot">'+
+      '<p><b>How the numbers work.</b> Win chances come from rating gaps (logistic / Elo). Projected opponents are the favourite of each opposing bracket region — they get fuzzier deeper in, so treat semi/final names as placeholders. With <code>wc-data.json</code> present, ratings are calibrated to live market title odds.</p>'+
+      '<p><b>Keeping it current.</b> Tap a match\'s <b>Won / Lost</b> as it finishes (and the France result up top) — the path, odds and sleep list redraw and save in this browser. If a <code>wc-data.json</code> sits next to this file (written by <code>wc_sync.py</code>), it auto-loads on open. To put this online, drop both files on any static host (GitHub Pages, Netlify drop, Vercel).</p>'+
+      '<p class="nw-fine">Times converted from FIFA\'s published ET (EDT, UTC−4) to SGT (UTC+8). Group seeds are projected where the group stage hasn\'t finished. Market data is used as a probability signal only — not betting advice. Heia Norge. 🇳🇴</p>'+
+    '</footer>';
+}
+
+function setTeam(code){
+  state.team=code; state.groupResult=null;
+  var g=teamGroupPos(code); state.posView = g?g.pos:2;
+  document.getElementById("brandFlag").textContent = flagOf(code);
+  save(); renderDyn();
+}
+
+function wireEvents(){
+  var app=document.getElementById("app");
+  app.addEventListener("click", function(e){
+    var btn=e.target.closest("[data-act]"); if(!btn) return;
+    var act=btn.getAttribute("data-act");
+    if(act==="g-first") state.groupResult = state.groupResult==="first"?null:"first";
+    else if(act==="g-second") state.groupResult = state.groupResult==="second"?null:"second";
+    else if(act==="g-reset") state.groupResult=null;
+    else if(act==="pos-1") state.posView=1;
+    else if(act==="pos-2") state.posView=2;
+    else if(act==="won"){ state.results[btn.getAttribute("data-m")] = state.team; }
+    else if(act==="lost"){ state.results[btn.getAttribute("data-m")] = btn.getAttribute("data-opp"); }
+    else if(act==="clear"){ delete state.results[btn.getAttribute("data-m")]; }
+    else if(act==="toggle-ratings"){ state.openRatings=!state.openRatings; save(); renderPanel();
+      var chevs=btn.querySelectorAll(".ic"); if(chevs.length){ var last=chevs[chevs.length-1]; last.classList.toggle("rot", state.openRatings);} return; }
+    else if(act==="reset-all"){ state.ratings={}; state.results={}; state.groupResult=null; save(); renderDyn(); renderPanel(); return; }
+    save(); renderDyn();
+  });
+  app.addEventListener("change", function(e){ if(e.target.id==="teamSelect"){ setTeam(e.target.value); } });
+  app.addEventListener("input", function(e){ if(e.target.classList && e.target.classList.contains("nw-rat-input")){
+    var code=e.target.getAttribute("data-code"); var val=Number(e.target.value);
+    if(!isNaN(val)) { state.ratings[code]=val; save(); renderDyn(); } } });
+}
+
+/* ---------------- live data (wc-data.json from wc_sync.py) ---------------- */
+function loadLive(){
+  try{
+    fetch(DATA_URL,{cache:"no-store"}).then(function(res){
+      if(!res.ok) return null; return res.json();
+    }).then(function(d){
+      if(!d) return;
+      if(d.teams) Object.keys(d.teams).forEach(function(c){
+        var t=d.teams[c]; if(typeof t==="number") t={r:t};
+        TEAMS[c]=Object.assign({n:c,f:"•",r:1800}, TEAMS[c]||{}, t);
+      });
+      if(d.groupSeeds) Object.keys(d.groupSeeds).forEach(function(g){ if(d.groupSeeds[g]&&d.groupSeeds[g].length) GROUP_SEEDS[g]=d.groupSeeds[g]; });
+      if(d.thirdQual && d.thirdQual.length) THIRD_QUAL=d.thirdQual;
+      if(d.thirdByMatch){ var m={}; Object.keys(d.thirdByMatch).forEach(function(k){ m[Number(k)]=d.thirdByMatch[k]; }); attachThirds(m); }
+      if(d.results) Object.keys(d.results).forEach(function(k){ if(state.results[k]==null) state.results[k]=d.results[k]; });
+      // selected team might have moved position; keep it valid
+      var bp=teamGroupPos(state.team); if(bp){ state.posView=bp.pos; } 
+      rebuildSelect();
+      renderDyn();
+      if(state.openRatings) renderPanel();
+      var pill=document.getElementById("livePill");
+      if(pill && d.asOf){ pill.textContent="● Live · "+d.asOf; pill.style.display="inline-flex"; }
+    }).catch(function(){});
+  }catch(e){}
+}
+
+/* ---------------- boot ---------------- */
+load();
+(function(){ var bp=teamGroupPos(state.team); if(bp&&bp.pos===3) state.posView=3; })();
+buildShell();
+document.getElementById("teamSelect").value = state.team;
+document.getElementById("brandFlag").textContent = flagOf(state.team);
+renderDyn();
+renderPanel();
+wireEvents();
+loadLive();
+</script>
+</body>
+</html>
