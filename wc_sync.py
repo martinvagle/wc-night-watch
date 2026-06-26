@@ -33,10 +33,11 @@ Run it
 
 Schedule it (cron, or the GitHub Action in the README) to refresh after each game.
 
-Note: this was written without live access to the providers, so the Polymarket
-market-shape parser and the team-name matching are the two places most likely to
-need a small tweak the first time you run it. Both log what they find. Adjust the
-slugs/aliases, re-run, done.
+Note: the Polymarket title-odds parser and team-name matching are verified
+against the live Gamma API (all 48 finalists map; book sums to ~0.98). The
+results (football-data.org) and per-match odds (the-odds-api) paths were written
+without live access, so those two are the places most likely to need a tweak the
+first time you wire in their tokens. Each logs what it finds.
 """
 from __future__ import annotations
 import argparse, json, math, os, random, sys, time
@@ -201,21 +202,30 @@ def _logit(p):
     return math.log(p / (1 - p))
 
 def calibrate(market, seeds, third_by_match, results, base_ratings,
-              iters=25, sims=4000, step=120.0, cap=350.0, log=print):
-    """Nudge ratings so simulated title odds track the market title odds."""
+              iters=30, sims=8000, step=90.0, cap=350.0, floor=0.02, log=print):
+    """Nudge ratings so simulated title odds track the market title odds.
+
+    Only teams the market gives a MATERIAL chance (>= floor, default 2%) are
+    fitted. Longshots priced at ~0.1% are mostly the book's over-round on the
+    field; forcing the sim to reproduce them pins minnows to the rating cap and
+    makes Saudi Arabia look as strong as France. Left on their priors, their
+    simulated title odds fall naturally as the real contenders are lifted."""
+    targets = {c: p for c, p in market.items() if p >= floor}
     ratings = dict(base_ratings)
     for it in range(iters):
         sim = simulate_titles(ratings, seeds, third_by_match, results, n=sims, seed=it)
         worst = 0.0
-        for code, mp in market.items():
+        damp = step * (1 - 0.5 * it / max(1, iters - 1))  # settle as we converge
+        for code, mp in targets.items():
             sp = sim.get(code, 1e-4)
             err = _logit(mp) - _logit(sp)
             worst = max(worst, abs(mp - sp))
-            delta = max(-step, min(step, step * err))
+            delta = max(-damp, min(damp, damp * err))
             base = base_ratings.get(code, 1800)
             ratings[code] = max(base - cap, min(base + cap, ratings.get(code, base) + delta))
-        log(f"  calibrate iter {it+1}/{iters}: max title-odds gap {worst*100:.1f} pts")
-        if worst < 0.004:
+        log(f"  calibrate iter {it+1}/{iters}: max title-odds gap {worst*100:.1f} pts "
+            f"(fitting {len(targets)} contenders >= {floor*100:.0f}%)")
+        if worst < 0.005:
             break
     return ratings
 
@@ -329,50 +339,51 @@ def _group_of(code, pos_lookup, pool):
 # ----------------------------------------------------------------------------
 # Source 2: Polymarket title odds
 # ----------------------------------------------------------------------------
+POLYMARKET_WINNER_SLUG = "world-cup-winner"
+
 def fetch_title_odds_polymarket(log=print):
-    """Read Polymarket 'win the World Cup' markets -> normalized title probs.
-    Uses the public Gamma API. Market structure varies, so we try a couple of
-    shapes and log what we find."""
+    """Read Polymarket's 'World Cup Winner' market -> normalized title probs.
+
+    Verified against the live Gamma API (Jun 2026). The outright-winner market
+    lives at event slug 'world-cup-winner' as ~60 binary "Will <team> win the
+    2026 FIFA World Cup?" sub-markets. Each carries the team in groupItemTitle
+    and a Yes/No price pair; the Yes price is the implied title probability.
+    NOTE: the /events 'search' param is silently ignored by Gamma — it returns a
+    generic list — so we MUST query by slug, not search. (That bug priced a lone
+    team at "100%" and blew a rating to its cap.)"""
     if not requests:
         return None
     try:
-        # Search events for the outright winner market.
-        url = "https://gamma-api.polymarket.com/events"
-        params = {"search": "World Cup winner", "closed": "false", "limit": 50}
-        r = requests.get(url, params=params, timeout=30)
+        r = requests.get("https://gamma-api.polymarket.com/events",
+                         params={"slug": POLYMARKET_WINNER_SLUG}, timeout=30)
         r.raise_for_status()
         events = r.json()
     except Exception as e:
         log(f"  polymarket: fetch failed ({e})"); return None
+    events = events if isinstance(events, list) else events.get("data", [])
+    if not events:
+        log(f"  polymarket: event '{POLYMARKET_WINNER_SLUG}' not found"); return None
 
-    prices = {}  # code -> implied prob (raw)
-    for ev in events if isinstance(events, list) else events.get("data", []):
-        title = (ev.get("title") or "").lower()
-        if "world cup" not in title or ("winner" not in title and "win the" not in title):
-            continue
+    prices = {}  # code -> raw Yes price (implied title prob)
+    for ev in events:
         for mk in ev.get("markets", []):
-            # multi-outcome market: outcomes + outcomePrices arrays
-            outs = _as_list(mk.get("outcomes"))
-            ops  = _as_list(mk.get("outcomePrices"))
-            if outs and ops and len(outs) == len(ops):
-                for nm, pr in zip(outs, ops):
-                    c = code_for(nm)
-                    if c:
-                        try: prices[c] = float(pr)
-                        except (TypeError, ValueError): pass
-            else:
-                # binary 'Will X win the World Cup?' market
-                c = code_for(mk.get("question") or mk.get("groupItemTitle") or "")
-                yes = _yes_price(mk)
-                if c and yes is not None:
-                    prices[c] = yes
-    if not prices:
-        log("  polymarket: no winner market matched (adjust the search/parser)")
+            code = code_for(mk.get("groupItemTitle") or "")
+            yes = _yes_price(mk)
+            if code and yes is not None and yes > 0:
+                prices[code] = yes
+
+    # Sanity guard: a credible outright market prices many teams and the raw Yes
+    # prices sum to roughly 1 (a book is slightly over-round). Anything else is a
+    # bad read -> return None so we calibrate on nothing and keep the priors.
+    raw_sum = sum(prices.values())
+    if len(prices) < 10 or not (0.5 <= raw_sum <= 1.8):
+        log(f"  polymarket: implausible market ({len(prices)} teams, sum={raw_sum:.2f}); skipping")
         return None
-    total = sum(prices.values()) or 1.0
-    norm = {c: p / total for c, p in prices.items()}  # de-vig / normalize to 1
-    log(f"  polymarket: {len(norm)} teams priced (top: "
-        + ", ".join(f"{c} {norm[c]*100:.0f}%" for c in sorted(norm, key=norm.get, reverse=True)[:4]) + ")")
+
+    norm = {c: p / raw_sum for c, p in prices.items()}  # normalize to 1
+    top = sorted(norm, key=norm.get, reverse=True)[:4]
+    log(f"  polymarket: {len(norm)} teams priced (raw sum {raw_sum:.2f}; top: "
+        + ", ".join(f"{c} {norm[c]*100:.0f}%" for c in top) + ")")
     return norm
 
 def _as_list(v):
