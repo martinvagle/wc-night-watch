@@ -315,43 +315,44 @@ var GROUP_SEEDS = {
   E:["GER","CIV","ECU"], F:["NED","JPN","SWE"], G:["BEL","EGY","IRN"], H:["ESP","CPV","KSA"],
   I:["FRA","NOR","SEN"], J:["ARG","AUT","ALG"], K:["COL","POR","COD"], L:["ENG","CRO","GHA"]
 };
-function Pp(g,p){return {t:"pos",g:g,p:p};}
-function Th(pool){return {t:"third",pool:pool};}
-function Wn(m){return {t:"win",m:m};}
+/* Real 2026 knockout bracket (group stage complete), in FIFA tree order.
+   R32 sides are explicit team codes; later rounds reference the feeder match {m}.
+   Source: official bracket (cross-checked vs Polymarket group results + BBC). */
+function Wn(m){return {m:m};}
 var SLOTS = {
-  73:{round:"R32",utc:"2026-06-28T19:00:00Z",venue:"Los Angeles", a:Pp("A",2), b:Pp("B",2)},
-  74:{round:"R32",utc:"2026-06-29T17:00:00Z",venue:"Houston",     a:Pp("C",1), b:Pp("F",2)},
-  75:{round:"R32",utc:"2026-06-29T20:30:00Z",venue:"Boston",      a:Pp("E",1), b:Th(["A","B","C","D","F"])},
-  76:{round:"R32",utc:"2026-06-30T01:00:00Z",venue:"Monterrey",   a:Pp("F",1), b:Pp("C",2)},
-  77:{round:"R32",utc:"2026-06-30T17:00:00Z",venue:"Dallas",      a:Pp("E",2), b:Pp("I",2)},
-  78:{round:"R32",utc:"2026-06-30T21:00:00Z",venue:"New York NJ", a:Pp("I",1), b:Th(["C","D","F","G","H"])},
-  79:{round:"R32",utc:"2026-07-01T01:00:00Z",venue:"Mexico City", a:Pp("A",1), b:Th(["C","E","F","H","I"])},
-  80:{round:"R32",utc:"2026-07-01T16:00:00Z",venue:"Atlanta",     a:Pp("L",1), b:Th(["E","H","I","J","K"])},
-  81:{round:"R32",utc:"2026-07-01T20:00:00Z",venue:"Seattle",     a:Pp("G",1), b:Th(["A","E","H","I","J"])},
-  82:{round:"R32",utc:"2026-07-02T00:00:00Z",venue:"SF Bay Area", a:Pp("D",1), b:Th(["B","E","F","I","J"])},
-  83:{round:"R32",utc:"2026-07-02T19:00:00Z",venue:"Los Angeles", a:Pp("H",1), b:Pp("J",2)},
-  84:{round:"R32",utc:"2026-07-02T23:00:00Z",venue:"Toronto",     a:Pp("K",2), b:Pp("L",2)},
-  85:{round:"R32",utc:"2026-07-03T03:00:00Z",venue:"Vancouver",   a:Pp("B",1), b:Th(["E","F","G","I","J"])},
-  86:{round:"R32",utc:"2026-07-03T18:00:00Z",venue:"Dallas",      a:Pp("D",2), b:Pp("G",2)},
-  87:{round:"R32",utc:"2026-07-03T22:00:00Z",venue:"Miami",       a:Pp("J",1), b:Pp("H",2)},
-  88:{round:"R32",utc:"2026-07-04T01:30:00Z",venue:"Kansas City", a:Pp("K",1), b:Th(["D","E","I","J","L"])},
-  89:{round:"R16",utc:"2026-07-04T17:00:00Z",venue:"Houston",     a:Wn(73), b:Wn(75)},
-  90:{round:"R16",utc:"2026-07-04T21:00:00Z",venue:"Philadelphia",a:Wn(74), b:Wn(77)},
-  91:{round:"R16",utc:"2026-07-05T20:00:00Z",venue:"New York NJ", a:Wn(76), b:Wn(78)},
-  92:{round:"R16",utc:"2026-07-06T00:00:00Z",venue:"Mexico City", a:Wn(79), b:Wn(80)},
-  93:{round:"R16",utc:"2026-07-06T19:00:00Z",venue:"Dallas",      a:Wn(83), b:Wn(84)},
-  94:{round:"R16",utc:"2026-07-07T00:00:00Z",venue:"Seattle",     a:Wn(81), b:Wn(82)},
-  95:{round:"R16",utc:"2026-07-07T16:00:00Z",venue:"Atlanta",     a:Wn(86), b:Wn(88)},
-  96:{round:"R16",utc:"2026-07-07T20:00:00Z",venue:"Vancouver",   a:Wn(85), b:Wn(87)},
-  97:{round:"QF", utc:"2026-07-09T20:00:00Z",venue:"Boston",      a:Wn(89), b:Wn(90)},
-  98:{round:"QF", utc:"2026-07-11T21:00:00Z",venue:"Miami",       a:Wn(91), b:Wn(92)},
-  99:{round:"QF", utc:"2026-07-10T19:00:00Z",venue:"Los Angeles", a:Wn(93), b:Wn(94)},
-  100:{round:"QF",utc:"2026-07-12T01:00:00Z",venue:"Kansas City", a:Wn(95), b:Wn(96)},
-  101:{round:"SF",utc:"2026-07-14T19:00:00Z",venue:"Dallas",      a:Wn(97), b:Wn(98)},
-  102:{round:"SF",utc:"2026-07-15T19:00:00Z",venue:"Atlanta",     a:Wn(99), b:Wn(100)},
-  103:{round:"F", utc:"2026-07-19T19:00:00Z",venue:"New York NJ", a:Wn(101),b:Wn(102)}
+  73:{round:"R32",utc:"2026-06-29T20:30:00Z",venue:"Foxborough",     a:"GER", b:"PAR"},
+  74:{round:"R32",utc:"2026-06-30T21:00:00Z",venue:"East Rutherford",a:"FRA", b:"SWE"},
+  75:{round:"R32",utc:"2026-06-28T19:00:00Z",venue:"Inglewood",      a:"RSA", b:"CAN"},
+  76:{round:"R32",utc:"2026-06-30T01:00:00Z",venue:"Guadalupe",      a:"NED", b:"MAR"},
+  77:{round:"R32",utc:"2026-07-02T23:00:00Z",venue:"Toronto",        a:"POR", b:"CRO"},
+  78:{round:"R32",utc:"2026-07-02T19:00:00Z",venue:"Inglewood",      a:"ESP", b:"AUT"},
+  79:{round:"R32",utc:"2026-07-02T00:00:00Z",venue:"Santa Clara",    a:"USA", b:"BIH"},
+  80:{round:"R32",utc:"2026-07-01T20:00:00Z",venue:"Seattle",        a:"BEL", b:"SEN"},
+  81:{round:"R32",utc:"2026-06-29T17:00:00Z",venue:"Houston",        a:"BRA", b:"JPN"},
+  82:{round:"R32",utc:"2026-06-30T17:00:00Z",venue:"Arlington",      a:"CIV", b:"NOR"},
+  83:{round:"R32",utc:"2026-07-01T01:00:00Z",venue:"Mexico City",    a:"MEX", b:"ECU"},
+  84:{round:"R32",utc:"2026-07-01T16:00:00Z",venue:"Atlanta",        a:"ENG", b:"COD"},
+  85:{round:"R32",utc:"2026-07-03T22:00:00Z",venue:"Miami",          a:"ARG", b:"CPV"},
+  86:{round:"R32",utc:"2026-07-03T18:00:00Z",venue:"Arlington",      a:"AUS", b:"EGY"},
+  87:{round:"R32",utc:"2026-07-03T03:00:00Z",venue:"Vancouver",      a:"SUI", b:"ALG"},
+  88:{round:"R32",utc:"2026-07-04T01:30:00Z",venue:"Kansas City",    a:"COL", b:"GHA"},
+  89:{round:"R16",utc:"2026-07-04T21:00:00Z",venue:"Philadelphia",   a:Wn(73), b:Wn(74)},
+  90:{round:"R16",utc:"2026-07-04T17:00:00Z",venue:"Houston",        a:Wn(75), b:Wn(76)},
+  91:{round:"R16",utc:"2026-07-06T19:00:00Z",venue:"Arlington",      a:Wn(77), b:Wn(78)},
+  92:{round:"R16",utc:"2026-07-07T00:00:00Z",venue:"Seattle",        a:Wn(79), b:Wn(80)},
+  93:{round:"R16",utc:"2026-07-05T20:00:00Z",venue:"East Rutherford",a:Wn(81), b:Wn(82)},
+  94:{round:"R16",utc:"2026-07-06T00:00:00Z",venue:"Mexico City",    a:Wn(83), b:Wn(84)},
+  95:{round:"R16",utc:"2026-07-07T16:00:00Z",venue:"Atlanta",        a:Wn(85), b:Wn(86)},
+  96:{round:"R16",utc:"2026-07-07T20:00:00Z",venue:"Vancouver",      a:Wn(87), b:Wn(88)},
+  97:{round:"QF", utc:"2026-07-09T20:00:00Z",venue:"Foxborough",     a:Wn(89), b:Wn(90)},
+  98:{round:"QF", utc:"2026-07-10T19:00:00Z",venue:"Inglewood",      a:Wn(91), b:Wn(92)},
+  99:{round:"QF", utc:"2026-07-11T21:00:00Z",venue:"Miami",          a:Wn(93), b:Wn(94)},
+  100:{round:"QF",utc:"2026-07-12T01:00:00Z",venue:"Kansas City",    a:Wn(95), b:Wn(96)},
+  101:{round:"SF",utc:"2026-07-14T19:00:00Z",venue:"Arlington",      a:Wn(97), b:Wn(98)},
+  102:{round:"SF",utc:"2026-07-15T19:00:00Z",venue:"Atlanta",        a:Wn(99), b:Wn(100)},
+  103:{round:"F", utc:"2026-07-19T19:00:00Z",venue:"East Rutherford",a:Wn(101),b:Wn(102)}
 };
-var PARENT = {73:89,75:89,74:90,77:90,76:91,78:91,79:92,80:92,83:93,84:93,81:94,82:94,86:95,88:95,85:96,87:96,89:97,90:97,91:98,92:98,93:99,94:99,95:100,96:100,97:101,98:101,99:102,100:102,101:103,102:103};
+var PARENT = {73:89,74:89,75:90,76:90,77:91,78:91,79:92,80:92,81:93,82:93,83:94,84:94,85:95,86:95,87:96,88:96,89:97,90:97,91:98,92:98,93:99,94:99,95:100,96:100,97:101,98:101,99:102,100:102,101:103,102:103};
 var ROUND_SHORT = {R32:"R32", R16:"R16", QF:"QF", SF:"SF", F:"FINAL"};
 /* The eight best third-placed teams that advanced, and the R32 slot each fills.
    Group stage is complete, so these are the actual FIFA allocations (overwritten
@@ -391,102 +392,13 @@ function sleepVerdict(hour){
   return {tag:"Civil hour", tone:"frost", icon:"sun", protect:"No reschedule", blurb:"A sane hour in Singapore."};
 }
 
-/* ---------------- bracket engine ---------------- */
-function buildPath(selected, assumedPos){
-  var tgp = teamGroupPos(selected); if(!tgp) return [];
-  var seeds={}; var gk=Object.keys(GROUP_SEEDS); for(var i=0;i<gk.length;i++){ seeds[gk[i]]=GROUP_SEEDS[gk[i]].slice(); }
-  var arr=seeds[tgp.g]; var cur=arr.indexOf(selected); var want=assumedPos-1;
-  if(cur>=0 && cur!==want && want<arr.length){ var tmp=arr[want]; arr[want]=selected; arr[cur]=tmp; }
-  var memo={};
-  function resolveTeam(d){ return d.t==="pos" ? seeds[d.g][d.p-1] : d.t==="third" ? ((d.g3 && seeds[d.g3]) ? seeds[d.g3][2] : ("T:"+thirdName(d.pool))) : resolveWinner(d.m); }
-  function resolveWinner(m){ if(memo[m]) return memo[m]; if(state.results[m]) { memo[m]=state.results[m]; return memo[m]; }
-    var s=SLOTS[m]; var a=resolveTeam(s.a); var b=resolveTeam(s.b); var w= ratingOf(a)>=ratingOf(b)?a:b; memo[m]=w; return w; }
-  function sideIsTeam(side){ return assumedPos<=2 ? (side.t==="pos"&&side.g===tgp.g&&side.p===assumedPos) : (side.t==="third"&&side.g3===tgp.g); }
-  var m0=null, keys=Object.keys(SLOTS);
-  for(var k=0;k<keys.length;k++){ var s=SLOTS[keys[k]]; if(s.round!=="R32") continue;
-    if(sideIsTeam(s.a)||sideIsTeam(s.b)) m0=Number(keys[k]); }
-  if(!m0) return [];
-  var path=[]; var m=m0; var cameFrom=null;
-  while(m){ var sl=SLOTS[m]; var opp;
-    if(sl.round==="R32"){ var aIsTeam=sideIsTeam(sl.a); opp=resolveTeam(aIsTeam?sl.b:sl.a); }
-    else { var c1=sl.a.m, c2=sl.b.m; opp=resolveWinner(c1===cameFrom?c2:c1); }
-    path.push({round:sl.round, m:m, utc:sl.utc, venue:sl.venue, opp:opp});
-    cameFrom=m; m=PARENT[m];
-  }
-  var reach=1, eliminatedAt=-1;
-  for(var p=0;p<path.length;p++){ var st=path[p];
-    st.reach=reach; st.win=winProb(selected, st.opp); st.locked=reach>=0.5;
-    var r=state.results[st.m];
-    if(r && r!==selected && eliminatedAt<0) eliminatedAt=p;
-    st.advanced=(r===selected); st.lost=(!!r && r!==selected);
-    reach*=st.win;
-  }
-  path.eliminatedAt=eliminatedAt;
-  return path;
-}
-
-/* ---------------- render pieces ---------------- */
+/* ---------------- render helper ---------------- */
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-
-function nightDialHTML(hour, tone){
-  var left=(hour/24)*100;
-  return '<div class="dial" title="'+hour+':00 SGT"><div class="dial-track"></div>'+
-    '<div class="dial-dot" data-tone="'+tone+'" style="left:'+left+'%"></div>'+
-    '<div class="dial-ticks"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div></div>';
-}
-function stationHTML(st, elim){
-  var s=fmtSGT(st.utc), v=sleepVerdict(s.hour);
-  var dead = elim>=0 && st._i>elim;
-  var cls="stn "+v.tone+(dead?" dead":"")+(st.lost?" lost":"")+(st.advanced?" adv":"")+(st.locked?"":" soft");
-  var flag = st.advanced ? '<span class="stn-flag advf">'+I("check",11)+' through</span>'
-    : st.lost ? '<span class="stn-flag out">out</span>'
-    : (!dead ? '<span class="stn-flag '+(st.locked?"lk":"bn")+'">'+(st.locked?"likely":"dream")+'</span>' : '');
-  var wonOn = st.advanced?" on w":"", lostOn = st.lost?" on l":"";
-  var wonAct = st.advanced?"clear":"won", lostAct = st.lost?"clear":"lost";
-  return '<div class="'+cls+'">'+
-    '<div class="stn-top"><span class="stn-round">'+ROUND_SHORT[st.round]+'</span>'+flag+'</div>'+
-    '<div><div class="stn-time">'+s.time+'</div><div class="stn-date">'+s.weekday+' '+s.date+'</div></div>'+
-    nightDialHTML(s.hour, v.tone)+
-    '<div class="stn-opp"><span class="stn-flagimg">'+flagOf(st.opp)+'</span><span class="stn-oppname">'+esc(nameOf(st.opp))+'</span></div>'+
-    '<div class="stn-prob"><div class="stn-bar"><span style="width:'+Math.round(st.win*100)+'%"></span></div><span class="stn-pct">'+Math.round(st.win*100)+'%</span></div>'+
-    '<div class="stn-sleep">'+I(v.icon,12)+' '+v.tag+'</div>'+
-    '<div class="stn-venue">'+st.venue+'</div>'+
-    '<div class="stn-mark">'+
-      '<button class="'+wonOn.trim()+'" data-act="'+wonAct+'" data-m="'+st.m+'">Won</button>'+
-      '<button class="'+lostOn.trim()+'" data-act="'+lostAct+'" data-m="'+st.m+'" data-opp="'+esc(st.opp)+'">Lost</button>'+
-    '</div>'+
-  '</div>';
-}
-function railHTML(title, sub, accent, path){
-  if(!path||!path.length) return "";
-  for(var i=0;i<path.length;i++) path[i]._i=i;
-  var reachFinal = path.length ? path[path.length-1].reach : 0;
-  var elim = path.eliminatedAt;
-  var stns = path.map(function(st){ return stationHTML(st, elim); }).join("");
-  return '<div class="rail '+accent+'">'+
-    '<div class="rail-head"><div class="rail-title"><span class="rail-pip"></span> '+title+' <em>· '+sub+'</em></div>'+
-    '<div class="rail-odds">'+I("trophy",13)+' reach the final <b>'+(reachFinal*100).toFixed(1)+'%</b></div></div>'+
-    '<div class="rail-track">'+stns+'</div></div>';
-}
-function sleepListHTML(title, path){
-  if(!path||!path.length) return "";
-  var elim=path.eliminatedAt;
-  var rows = path.map(function(st,i){
-    var s=fmtSGT(st.utc), v=sleepVerdict(s.hour); var dead = elim>=0 && i>elim; if(dead) return "";
-    return '<li class="slp-row '+v.tone+'">'+
-      '<div class="slp-date"><span class="slp-day">'+s.weekday+'</span><span class="slp-dt">'+s.date+'</span></div>'+
-      '<div class="slp-mid"><div class="slp-match">'+ROUND_SHORT[st.round]+' · '+flagOf(st.opp)+' '+esc(nameOf(st.opp))+'</div>'+
-      '<div class="slp-sub">kickoff '+s.time+' · '+v.protect+'</div></div>'+
-      '<span class="slp-tag '+(st.locked?"lk":"bn")+'">'+(st.locked?"likely":"dream")+'</span></li>';
-  }).join("");
-  return '<div class="slp"><h3>'+esc(title)+'</h3><ul>'+rows+'</ul></div>';
-}
 
 /* ---------------- bracket resolution (groups are done) ---------------- */
 function resolveSide(d){
-  if(d.t==="pos"){ var col=GROUP_SEEDS[d.g]; return col?col[d.p-1]:null; }
-  if(d.t==="third"){ var g=d.g3; return (g&&GROUP_SEEDS[g])?GROUP_SEEDS[g][2]:null; }
-  if(d.t==="win"){ return winnerOf(d.m); }
+  if(typeof d==="string") return d;                       // R32: explicit team code
+  if(d && d.m!=null) return winnerOf(d.m);                // later round: winner of feeder
   return null;
 }
 function slotTeams(m){ var s=SLOTS[m]; return [resolveSide(s.a), resolveSide(s.b)]; }
@@ -497,7 +409,7 @@ function winnerOf(m){
 }
 function slotConfirmed(m){                                 // both participants known (not projected)
   var s=SLOTS[m];
-  function ok(d){ return d.t==="win" ? (state.results[d.m]!=null) : true; }
+  function ok(d){ return (typeof d==="string") ? true : (state.results[d.m]!=null); }
   return ok(s.a)&&ok(s.b);
 }
 function teamR32Slot(code){
@@ -557,7 +469,7 @@ function heroHTML(){
 
 /* ---------------- full bracket tree (always shown) ---------------- */
 var BK_COLS=[
-  {label:"Round of 32",    ms:[73,75,74,77,76,78,79,80,83,84,81,82,86,88,85,87]},
+  {label:"Round of 32",    ms:[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88]},
   {label:"Round of 16",    ms:[89,90,91,92,93,94,95,96]},
   {label:"Quarter-finals", ms:[97,98,99,100]},
   {label:"Semi-finals",    ms:[101,102]},

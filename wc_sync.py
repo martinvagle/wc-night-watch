@@ -123,20 +123,16 @@ def code_for(name: str):
 # ----------------------------------------------------------------------------
 # Bracket — must mirror the planner exactly.
 # ----------------------------------------------------------------------------
-POS = lambda g, p: ("pos", g, p)
-TH  = lambda pool: ("third", tuple(pool))
-R32 = {
-    73:(POS("A",2),POS("B",2)), 74:(POS("C",1),POS("F",2)),
-    75:(POS("E",1),TH("ABCDF")), 76:(POS("F",1),POS("C",2)),
-    77:(POS("E",2),POS("I",2)), 78:(POS("I",1),TH("CDFGH")),
-    79:(POS("A",1),TH("CEFHI")), 80:(POS("L",1),TH("EHIJK")),
-    81:(POS("G",1),TH("AEHIJ")), 82:(POS("D",1),TH("BEFIJ")),
-    83:(POS("H",1),POS("J",2)), 84:(POS("K",2),POS("L",2)),
-    85:(POS("B",1),TH("EFGIJ")), 86:(POS("D",2),POS("G",2)),
-    87:(POS("J",1),POS("H",2)), 88:(POS("K",1),TH("DEIJL")),
+# Real R32 ties in FIFA bracket order (group stage complete). Match numbers and
+# the tree below mirror the planner's bracket exactly so result keys line up.
+R32_TEAMS = {
+    73:("GER","PAR"), 74:("FRA","SWE"), 75:("RSA","CAN"), 76:("NED","MAR"),
+    77:("POR","CRO"), 78:("ESP","AUT"), 79:("USA","BIH"), 80:("BEL","SEN"),
+    81:("BRA","JPN"), 82:("CIV","NOR"), 83:("MEX","ECU"), 84:("ENG","COD"),
+    85:("ARG","CPV"), 86:("AUS","EGY"), 87:("SUI","ALG"), 88:("COL","GHA"),
 }
-CHILDREN = {89:(73,75),90:(74,77),91:(76,78),92:(79,80),93:(83,84),94:(81,82),
-            95:(86,88),96:(85,87),97:(89,90),98:(91,92),99:(93,94),100:(95,96),
+CHILDREN = {89:(73,74),90:(75,76),91:(77,78),92:(79,80),93:(81,82),94:(83,84),
+            95:(85,86),96:(87,88),97:(89,90),98:(91,92),99:(93,94),100:(95,96),
             101:(97,98),102:(99,100),103:(101,102)}
 ORDER = list(range(73, 104))
 
@@ -160,22 +156,10 @@ def win_prob(ra, rb):
 # ----------------------------------------------------------------------------
 # Monte Carlo title odds for the current bracket + ratings
 # ----------------------------------------------------------------------------
-def resolve_r32(seeds, third_by_match):
-    """Return {match: (codeA, codeB)} for the 16 R32 ties."""
-    out = {}
-    for m, (sa, sb) in R32.items():
-        out[m] = (_side(sa, m, seeds, third_by_match), _side(sb, m, seeds, third_by_match))
-    return out
-
-def _side(side, m, seeds, tbm):
-    if side[0] == "pos":
-        _, g, p = side
-        col = seeds.get(g, [])
-        return col[p-1] if len(col) >= p else None
-    else:  # third
-        g = tbm.get(m)
-        col = seeds.get(g, []) if g else []
-        return col[2] if len(col) >= 3 else None
+def resolve_r32(seeds=None, third_by_match=None):
+    """The 16 R32 ties as {match: (codeA, codeB)}. Groups are complete so the
+    pairings are fixed; args are accepted only for call-site compatibility."""
+    return dict(R32_TEAMS)
 
 def simulate_titles(ratings, seeds, third_by_match, results, n=20000, seed=0):
     rng = random.Random(seed)
@@ -277,11 +261,11 @@ def fetch_results_football_data(token, log=print):
     for g in DEFAULT_GROUP_SEEDS:
         seeds.setdefault(g, list(DEFAULT_GROUP_SEEDS[g]))
 
-    # If the knockout draw is live, map real R32 ties back to our match numbers
-    # and any finished results to our numbering.
-    third_by_match, results = _infer_ko(ko, seeds, log)
-    log(f"  results: {sum(len(v) for v in tbl.values())} group entries, {len(ko)} knockout fixtures read")
-    return seeds, third_by_match, results
+    # Knockout pairings are fixed (bracket order in R32_TEAMS) and results come
+    # from the Polymarket reader, so we only take final group standings here.
+    log(f"  results: {sum(len(v) for v in tbl.values())} group entries read; "
+        f"knockout pairings from the fixed bracket")
+    return seeds, dict(DEFAULT_THIRD_BY_MATCH), {}
 
 def _apply(t, h, a, hg, ag):
     t[h]["gf"] += hg; t[a]["gf"] += ag
@@ -293,52 +277,6 @@ def _apply(t, h, a, hg, ag):
 def _rank(group):
     return [c for c, _ in sorted(group.items(),
             key=lambda kv: (kv[1]["pts"], kv[1]["gd"], kv[1]["gf"]), reverse=True)]
-
-def _infer_ko(ko, seeds, log):
-    """Best-effort: match real R32 ties to our slot numbers via the pos side,
-    deriving which group's third filled each third-slot. Records finished winners."""
-    tbm, results = {}, {}
-    pos_lookup = {}  # code -> (group,pos)
-    for g, col in seeds.items():
-        for i, c in enumerate(col[:2]):
-            pos_lookup[c] = (g, i+1)
-    for tie in ko:
-        h, a, w = tie["home"], tie["away"], tie["winner"]
-        slot = _match_r32_slot(h, a, pos_lookup)
-        if slot:
-            mno, third_group = slot
-            if third_group:
-                tbm[mno] = third_group
-            if w:
-                results[mno] = w
-    if not tbm:
-        tbm = dict(DEFAULT_THIRD_BY_MATCH)
-    return tbm, results
-
-def _match_r32_slot(h, a, pos_lookup):
-    """Find which R32 match (h,a) corresponds to. Returns (match, third_group|None)."""
-    for m, (sa, sb) in R32.items():
-        for known, other in ((h, a), (a, h)):
-            gp = pos_lookup.get(known)
-            if not gp:
-                continue
-            for side in (sa, sb):
-                if side[0] == "pos" and side[1] == gp[0] and side[2] == gp[1]:
-                    # the other side is either a fixed pos or a third pool
-                    third_side = sb if side is sa else sa
-                    if third_side[0] == "third":
-                        return m, _group_of(other, pos_lookup, third_side[1])
-                    return m, None
-    return None
-
-def _group_of(code, pos_lookup, pool):
-    # 'code' should be the third-placed team; find its group among the pool
-    for g in pool:
-        # third team isn't in pos_lookup (only 1st/2nd are); we can't know group
-        # purely from lookup, so leave None unless caller knows. Returning None
-        # keeps the default allocation; refine if your API exposes group letters.
-        pass
-    return None
 
 # ----------------------------------------------------------------------------
 # Source 2: Polymarket title odds
