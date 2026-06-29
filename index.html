@@ -204,6 +204,26 @@ body{
 .nw-next-sleep.amber{border-color:rgba(244,173,62,.34)}.nw-next-sleep.amber b{color:var(--amber)}.nw-next-sleep.amber .ic{color:var(--amber)}
 .nw-next-sleep.blue b{color:#9cc0ff}.nw-next-sleep.frost{border-color:rgba(79,214,172,.34)}.nw-next-sleep.frost b{color:var(--frost)}.nw-next-sleep.frost .ic{color:var(--frost)}
 
+/* forward projection road */
+.nw-road{margin:0}
+.nw-road h2{font-family:var(--head);font-weight:800;font-size:17px;display:flex;align-items:center;gap:8px;margin:20px 0 6px}
+.nw-road-lead{font-size:12.5px;color:var(--dim);margin:0 0 14px;max-width:840px}
+.nw-road-lead b{color:var(--ice);font-weight:600}
+.road-list{display:flex;flex-direction:column;gap:8px}
+.road-step{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:9px 13px}
+.road-rd{font-family:var(--disp);font-size:14px;color:var(--faint);min-width:44px;letter-spacing:.06em}
+.road-opp{flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.road-fl{font-size:18px;flex:none}
+.road-on{font-family:var(--head);font-weight:600;font-size:13.5px}
+.road-when{font-family:var(--mono);font-size:10.5px;color:var(--faint);width:100%;margin-left:26px}
+.road-num{text-align:right;min-width:64px}
+.road-num b{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--ice);display:block;line-height:1.1}
+.road-num small{font-size:9.5px;color:var(--faint);letter-spacing:.02em}
+.road-num.cum b{color:var(--frost)}
+.road-foot{margin-top:13px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:13px;flex-wrap:wrap}
+.road-foot b{font-family:var(--mono);color:var(--frost);font-size:17px}
+.road-foot span{color:var(--faint);font-size:11.5px}
+
 /* bracket tree */
 .nw-bracket{margin:28px 0 8px}
 .nw-bracket h2{font-family:var(--head);font-weight:800;font-size:18px;display:flex;align-items:center;gap:9px;margin:0 0 6px}
@@ -215,8 +235,8 @@ body{
 .bk-round{display:flex;flex-direction:column;flex:1 0 auto}
 .bk-rhead{font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:center;padding:0 0 8px}
 .bk-col{flex:1;display:flex;flex-direction:column}
-.bk-cell{flex:1 1 0;display:flex;align-items:center;justify-content:center;min-height:58px}
-.bk-match{width:160px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:6px 8px;display:flex;flex-direction:column;gap:3px}
+.bk-cell{flex:1 1 0;display:flex;align-items:center;justify-content:center;min-height:84px;padding:3px 0}
+.bk-match{width:166px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 9px;display:flex;flex-direction:column;gap:4px}
 .bk-match.proj{opacity:.55}
 .bk-match.hot{border-color:var(--blue);box-shadow:0 0 0 1px rgba(93,143,240,.45)}
 .bk-when{font-family:var(--mono);font-size:9.5px;color:var(--faint);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden}
@@ -568,8 +588,51 @@ function bracketHTML(){
     '<div class="bk-scroll"><div class="bk">'+cols+'</div></div></section>';
 }
 
+/* ---------------- forward projection: the chosen team's road ---------------- */
+function pct(x){ var p=x*100; if(p>=10) return Math.round(p)+"%"; if(p>=1) return p.toFixed(1)+"%"; return p.toFixed(2)+"%"; }
+function teamRoad(code){
+  var m=teamR32Slot(code); if(!m) return null;
+  var road=[], cum=1, from=null;
+  while(m){
+    var dec=state.results[m];
+    if(dec!=null){ if(dec!==code) return {eliminated:true}; from=m; m=PARENT[m]; continue; }
+    // opponent comes from the OTHER side of this tie (assume `code` itself advances)
+    var opp;
+    if(SLOTS[m].round==="R32"){ var t=slotTeams(m); opp=(t[0]===code?t[1]:t[0]); }
+    else { var a=SLOTS[m].a.m, b=SLOTS[m].b.m; opp=winnerOf(a===from?b:a); }
+    if(!opp) break;
+    var p=winProb(code,opp);
+    road.push({m:m, round:SLOTS[m].round, opp:opp, confirmed:slotConfirmed(m), win:p, cum:cum*p});
+    cum*=p;
+    from=m; var par=PARENT[m]; if(!par) break; m=par;
+  }
+  return {eliminated:false, road:road, champ:cum};
+}
+function roadHTML(){
+  var code=state.team, r=teamRoad(code);
+  if(!r || r.eliminated || !r.road.length) return "";
+  var t=TEAMS[code]||{n:code};
+  var steps=r.road.map(function(st){
+    var s=fmtSGT(SLOTS[st.m].utc);
+    return '<div class="road-step">'+
+      '<div class="road-rd">'+ROUND_SHORT[st.round]+'</div>'+
+      '<div class="road-opp"><span class="road-fl">'+flagOf(st.opp)+'</span>'+
+        '<span class="road-on">'+esc(nameOf(st.opp))+(st.confirmed?'':' <span class="nw-proj">proj.</span>')+'</span>'+
+        '<span class="road-when">'+s.time+' · '+s.weekday+' '+s.date+' SGT</span></div>'+
+      '<div class="road-num"><b>'+Math.round(st.win*100)+'%</b><small>win this tie</small></div>'+
+      '<div class="road-num cum"><b>'+pct(st.cum)+'</b><small>still in after</small></div>'+
+    '</div>';
+  }).join("");
+  return '<section class="nw-road">'+
+    '<h2>'+I("swords",17)+' '+esc(t.n)+'’s road from here</h2>'+
+    '<p class="nw-road-lead">Each round shows the projected opponent (the favourite from the other side of that tie). <b>Win this tie</b> is the one-off chance of that single game; <b>still in after</b> compounds them — a 40% game then a 35% game leaves only ~14% of surviving both. That’s why the deep run is always far longer odds than any one match looks.</p>'+
+    '<div class="road-list">'+steps+'</div>'+
+    '<div class="road-foot">'+I("trophy",15)+' '+esc(t.n)+' win it all from here: <b>'+pct(r.champ)+'</b> <span>— assuming the favourite wins every other tie on the way</span></div>'+
+  '</section>';
+}
+
 function renderDyn(){
-  document.getElementById("dyn").innerHTML = heroHTML();
+  document.getElementById("dyn").innerHTML = heroHTML() + roadHTML();
   var b=document.getElementById("bracket"); if(b) b.innerHTML = bracketHTML();
 }
 function renderPanel(){
