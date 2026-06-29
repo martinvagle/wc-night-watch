@@ -412,6 +412,16 @@ function slotConfirmed(m){                                 // both participants 
   function ok(d){ return (typeof d==="string") ? true : (state.results[d.m]!=null); }
   return ok(s.a)&&ok(s.b);
 }
+/* Drop any saved result whose winner isn't actually in that match — guards
+   against stale localStorage from an earlier bracket numbering. R32 first so
+   later rounds resolve against clean feeders. */
+function sanitizeResults(){
+  for(var m=73;m<=103;m++){
+    var w=state.results[m]; if(w==null) continue;
+    var t=slotTeams(m);
+    if(w!==t[0] && w!==t[1]) delete state.results[m];
+  }
+}
 function teamR32Slot(code){
   for(var m=73;m<=88;m++){ var t=slotTeams(m); if(t[0]===code||t[1]===code) return m; }
   return null;
@@ -544,6 +554,7 @@ function roadHTML(){
 }
 
 function renderDyn(){
+  sanitizeResults();
   document.getElementById("dyn").innerHTML = heroHTML() + roadHTML();
   var b=document.getElementById("bracket"); if(b) b.innerHTML = bracketHTML();
 }
