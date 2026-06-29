@@ -140,15 +140,19 @@ CHILDREN = {89:(73,75),90:(74,77),91:(76,78),92:(79,80),93:(83,84),94:(81,82),
             101:(97,98),102:(99,100),103:(101,102)}
 ORDER = list(range(73, 104))
 
-# Defaults that match the planner today (overwritten from results when available).
+# Final group standings, 2026 World Cup (group stage complete). [1st, 2nd, 3rd];
+# the 3rd entry only matters where that group's third-place team qualified.
+# Source: official standings, cross-checked against Polymarket group-winner markets.
 DEFAULT_GROUP_SEEDS = {
     "A":["MEX","RSA","KOR"], "B":["SUI","CAN","BIH"], "C":["BRA","MAR","SCO"],
-    "D":["USA","TUR","PAR"], "E":["GER","CIV","ECU"], "F":["NED","JPN","SWE"],
-    "G":["BEL","EGY","IRN"], "H":["ESP","URU","KSA"], "I":["FRA","NOR","SEN"],
-    "J":["ARG","AUT","ALG"], "K":["POR","COL","COD"], "L":["ENG","CRO","GHA"],
+    "D":["USA","AUS","PAR"], "E":["GER","CIV","ECU"], "F":["NED","JPN","SWE"],
+    "G":["BEL","EGY","IRN"], "H":["ESP","CPV","KSA"], "I":["FRA","NOR","SEN"],
+    "J":["ARG","AUT","ALG"], "K":["COL","POR","COD"], "L":["ENG","CRO","GHA"],
 }
-DEFAULT_THIRD_BY_MATCH = {75:"A",78:"F",79:"C",80:"E",81:"J",82:"B",85:"G",88:"L"}
-THIRD_QUAL_DEFAULT = ["A","B","C","E","F","G","J","L"]
+# The eight best third-placed teams and the R32 slot each fills (FIFA allocation
+# resolved by the actual qualifiers). Derived from the real R32 fixtures.
+DEFAULT_THIRD_BY_MATCH = {75:"D",78:"F",79:"E",80:"K",81:"I",82:"B",85:"J",88:"L"}
+THIRD_QUAL_DEFAULT = ["B","D","E","F","I","J","K","L"]
 
 def win_prob(ra, rb):
     return 1.0 / (1.0 + 10 ** (-(ra - rb) / 400.0))
@@ -386,6 +390,62 @@ def fetch_title_odds_polymarket(log=print):
         + ", ".join(f"{c} {norm[c]*100:.0f}%" for c in top) + ")")
     return norm
 
+# Polymarket 'reach round X' markets, in bracket order. A team priced at ~1.0 in
+# the market for the NEXT round has, by definition, already won its match in the
+# round below -> a decided result. (match-number range each market decides.)
+KO_STAGE_SLUGS = [
+    ("world-cup-nation-to-reach-round-of-16",   73, 88),  # won R32
+    ("world-cup-nation-to-reach-quarterfinals", 89, 96),  # won R16
+    ("world-cup-nation-to-reach-semifinals",    97, 100), # won QF
+    ("world-cup-nation-to-reach-final",        101, 102), # won SF
+    ("world-cup-winner",                       103, 103), # won Final
+]
+
+def _reach_probs(slug, log):
+    try:
+        r = requests.get("https://gamma-api.polymarket.com/events",
+                         params={"slug": slug}, timeout=30)
+        r.raise_for_status(); evs = r.json()
+    except Exception as e:
+        log(f"  knockouts: {slug} fetch failed ({e})"); return {}
+    evs = evs if isinstance(evs, list) else evs.get("data", [])
+    probs = {}
+    for ev in evs:
+        for mk in ev.get("markets", []):
+            c = code_for(mk.get("groupItemTitle") or "")
+            y = _yes_price(mk)
+            if c and y is not None:
+                probs[c] = y
+    return probs
+
+def fetch_knockout_results_polymarket(seeds, third_by_match, log=print, win=0.99):
+    """Decided knockout winners, read from Polymarket 'reach round X' markets.
+
+    A team priced >= `win` to reach the next round has clinched its current-round
+    match. Walk the bracket so each decided winner is attributed to the right slot
+    and feeds the rounds above it. Returns {match_no: winning_code}."""
+    if not requests:
+        return {}
+    stage_probs = {slug: _reach_probs(slug, log) for slug, _, _ in KO_STAGE_SLUGS}
+    def probs_for(m):
+        for slug, lo, hi in KO_STAGE_SLUGS:
+            if lo <= m <= hi:
+                return stage_probs.get(slug, {})
+        return {}
+    r32 = resolve_r32(seeds, third_by_match)
+    results = {}
+    for m in ORDER:
+        a, b = (r32.get(m, (None, None)) if m < 89
+                else (results.get(CHILDREN[m][0]), results.get(CHILDREN[m][1])))
+        if not a or not b:
+            continue  # this tie isn't set yet (a feeder match is undecided)
+        p = probs_for(m)
+        if   p.get(a, 0) >= win: results[m] = a
+        elif p.get(b, 0) >= win: results[m] = b
+    log("  knockouts: " + (", ".join(f"{m}->{results[m]}" for m in sorted(results))
+                           if results else "none decided yet"))
+    return results
+
 def _as_list(v):
     if isinstance(v, list): return v
     if isinstance(v, str):
@@ -476,6 +536,11 @@ def main():
             log("Fetching Polymarket title odds...")
             market = fetch_title_odds_polymarket(log)
             if market: sources["titleOdds"] = "polymarket"
+            log("Fetching knockout results (Polymarket)...")
+            ko = fetch_knockout_results_polymarket(seeds, third_by_match, log)
+            if ko:
+                results.update(ko)
+                sources["knockoutResults"] = "polymarket"
         log("Fetching per-match odds...")
         match_odds = fetch_match_odds(os.environ.get("ODDS_API_KEY"), seeds, third_by_match, log)
         if match_odds: sources["matchOdds"] = "the-odds-api"

@@ -185,10 +185,59 @@ body{
 .nw-foot b{color:var(--ice);font-weight:600}
 .nw-fine{color:var(--faint)!important;font-size:11.5px!important}
 
+/* next-match card */
+.nw-hero.solo .nw-hero-tag,.nw-hero.next .nw-hero-tag,.nw-hero.out .nw-hero-tag,.nw-hero.champ .nw-hero-tag{color:#cfe0ff;background:rgba(93,143,240,.12);border-color:rgba(93,143,240,.3)}
+.nw-hero.champ .nw-hero-tag{color:var(--amber);background:rgba(244,173,62,.12);border-color:rgba(244,173,62,.3)}
+.nw-next{display:flex;align-items:center;gap:16px}
+.nw-next .nw-vs i{color:var(--faint);font-size:.6em;margin:0 .25em;vertical-align:.12em}
+.nw-proj{font-size:.5em;color:var(--faint);font-family:var(--body);letter-spacing:0;vertical-align:.2em}
+.nw-next-meta{display:flex;gap:13px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.nw-next-stat{display:flex;flex-direction:column;justify-content:center;min-width:92px}
+.nw-next-pct{font-family:var(--disp);font-size:38px;line-height:1;color:#fff}
+.nw-next-stat small{font-size:11px;color:var(--faint);letter-spacing:.04em;margin-top:3px}
+.nw-next-sleep{display:flex;align-items:center;gap:10px;flex:1;min-width:210px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.nw-next-sleep .ic{flex:none;color:var(--dim)}
+.nw-next-sleep div{display:flex;flex-direction:column;min-width:0}
+.nw-next-sleep b{font-size:13.5px}
+.nw-next-sleep span{font-size:11.5px;color:var(--dim)}
+.nw-next-sleep.red{border-color:rgba(236,28,52,.4)}.nw-next-sleep.red b{color:#ff8a96}.nw-next-sleep.red .ic{color:#ff8a96}
+.nw-next-sleep.amber{border-color:rgba(244,173,62,.34)}.nw-next-sleep.amber b{color:var(--amber)}.nw-next-sleep.amber .ic{color:var(--amber)}
+.nw-next-sleep.blue b{color:#9cc0ff}.nw-next-sleep.frost{border-color:rgba(79,214,172,.34)}.nw-next-sleep.frost b{color:var(--frost)}.nw-next-sleep.frost .ic{color:var(--frost)}
+
+/* bracket tree */
+.nw-bracket{margin:28px 0 8px}
+.nw-bracket h2{font-family:var(--head);font-weight:800;font-size:18px;display:flex;align-items:center;gap:9px;margin:0 0 6px}
+.nw-bracket-lead{font-size:12.5px;color:var(--dim);margin:0 0 14px;max-width:860px}
+.nw-bracket-lead b{color:var(--ice);font-weight:600}
+.bk-scroll{overflow-x:auto;padding-bottom:10px;scrollbar-width:thin}
+.bk-scroll::-webkit-scrollbar{height:8px}.bk-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+.bk{display:flex;gap:10px;min-width:max-content;align-items:stretch}
+.bk-round{display:flex;flex-direction:column;flex:1 0 auto}
+.bk-rhead{font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:center;padding:0 0 8px}
+.bk-col{flex:1;display:flex;flex-direction:column}
+.bk-cell{flex:1 1 0;display:flex;align-items:center;justify-content:center;min-height:58px}
+.bk-match{width:160px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:6px 8px;display:flex;flex-direction:column;gap:3px}
+.bk-match.proj{opacity:.55}
+.bk-match.hot{border-color:var(--blue);box-shadow:0 0 0 1px rgba(93,143,240,.45)}
+.bk-when{font-family:var(--mono);font-size:9.5px;color:var(--faint);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden}
+.bk-dot{width:7px;height:7px;border-radius:50%;flex:none}
+.bk-dot[data-tone="red"]{background:var(--red)}.bk-dot[data-tone="amber"]{background:var(--amber)}.bk-dot[data-tone="blue"]{background:var(--blue)}.bk-dot[data-tone="frost"]{background:var(--frost)}
+.bk-row{display:flex;align-items:center;gap:7px;padding:3px 5px;border-radius:6px;font-size:12.5px}
+.bk-row .bk-fl{font-size:15px;line-height:1;flex:none}
+.bk-row .bk-cd{font-family:var(--head);font-weight:600;letter-spacing:.02em}
+.bk-row.tbd .bk-cd{color:var(--faint);font-weight:500}
+.bk-row.win{background:rgba(79,214,172,.14)}
+.bk-row.win .bk-cd{color:var(--frost)}
+.bk-row.lose{opacity:.45;text-decoration:line-through}
+.bk-row.me{box-shadow:inset 2px 0 0 var(--blue)}
+.bk-row.me .bk-cd{color:#fff}
+.bk-chk{margin-left:auto;color:var(--frost);display:flex}
+
 @media (max-width:620px){
   .nw-fork{grid-template-columns:1fr}
   .nw-select select{max-width:60vw}
   .rail-track{grid-auto-columns:minmax(160px,78%)}
+  .nw-next{gap:11px}.nw-big-flag{font-size:34px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -237,13 +286,14 @@ var TEAMS = {
   NOR:{n:"Norway",f:"🇳🇴",r:1945}, FRA:{n:"France",f:"🇫🇷",r:2045}, SEN:{n:"Senegal",f:"🇸🇳",r:1910},
   ARG:{n:"Argentina",f:"🇦🇷",r:2060}, AUT:{n:"Austria",f:"🇦🇹",r:1865}, ALG:{n:"Algeria",f:"🇩🇿",r:1820},
   POR:{n:"Portugal",f:"🇵🇹",r:2005}, COL:{n:"Colombia",f:"🇨🇴",r:1935}, COD:{n:"DR Congo",f:"🇨🇩",r:1785},
-  ENG:{n:"England",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",r:2025}, CRO:{n:"Croatia",f:"🇭🇷",r:1955}, GHA:{n:"Ghana",f:"🇬🇭",r:1805}
+  ENG:{n:"England",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",r:2025}, CRO:{n:"Croatia",f:"🇭🇷",r:1955}, GHA:{n:"Ghana",f:"🇬🇭",r:1805},
+  AUS:{n:"Australia",f:"🇦🇺",r:1800}, CPV:{n:"Cabo Verde",f:"🇨🇻",r:1700}
 };
 var THIRD_RATING = 1825;
 var GROUP_SEEDS = {
-  A:["MEX","RSA","KOR"], B:["SUI","CAN","BIH"], C:["BRA","MAR","SCO"], D:["USA","TUR","PAR"],
-  E:["GER","CIV","ECU"], F:["NED","JPN","SWE"], G:["BEL","EGY","IRN"], H:["ESP","URU","KSA"],
-  I:["FRA","NOR","SEN"], J:["ARG","AUT","ALG"], K:["POR","COL","COD"], L:["ENG","CRO","GHA"]
+  A:["MEX","RSA","KOR"], B:["SUI","CAN","BIH"], C:["BRA","MAR","SCO"], D:["USA","AUS","PAR"],
+  E:["GER","CIV","ECU"], F:["NED","JPN","SWE"], G:["BEL","EGY","IRN"], H:["ESP","CPV","KSA"],
+  I:["FRA","NOR","SEN"], J:["ARG","AUT","ALG"], K:["COL","POR","COD"], L:["ENG","CRO","GHA"]
 };
 function Pp(g,p){return {t:"pos",g:g,p:p};}
 function Th(pool){return {t:"third",pool:pool};}
@@ -283,12 +333,11 @@ var SLOTS = {
 };
 var PARENT = {73:89,75:89,74:90,77:90,76:91,78:91,79:92,80:92,83:93,84:93,81:94,82:94,86:95,88:95,85:96,87:96,89:97,90:97,91:98,92:98,93:99,94:99,95:100,96:100,97:101,98:101,99:102,100:102,101:103,102:103};
 var ROUND_SHORT = {R32:"R32", R16:"R16", QF:"QF", SF:"SF", F:"FINAL"};
-/* Eight best third-placed teams advance. Which groups' thirds qualify + which R32 slot
-   they fill is set by a FIFA lookup table that only resolves once the group stage ends.
-   Below is a plausible projection (Senegal's 0–3 pt third is excluded); both are labelled
-   "projected" in the UI and the slot dates/times are exact regardless of who fills them. */
-var THIRD_QUAL = ["A","B","C","E","F","G","J","L"];
-var THIRD_BY_MATCH = {75:"A", 78:"F", 79:"C", 80:"E", 81:"J", 82:"B", 85:"G", 88:"L"};
+/* The eight best third-placed teams that advanced, and the R32 slot each fills.
+   Group stage is complete, so these are the actual FIFA allocations (overwritten
+   from wc-data.json on load). Slot dates/times are exact. */
+var THIRD_QUAL = ["B","D","E","F","I","J","K","L"];
+var THIRD_BY_MATCH = {75:"D", 78:"F", 79:"E", 80:"K", 81:"I", 82:"B", 85:"J", 88:"L"};
 function attachThirds(map){ THIRD_BY_MATCH=map; Object.keys(SLOTS).forEach(function(m){ var s=SLOTS[m]; [s.a,s.b].forEach(function(side){ if(side.t==="third") side.g3=map[m]; }); }); }
 attachThirds(THIRD_BY_MATCH);
 
@@ -413,85 +462,115 @@ function sleepListHTML(title, path){
   return '<div class="slp"><h3>'+esc(title)+'</h3><ul>'+rows+'</ul></div>';
 }
 
-function heroHTML(){
-  var isNor = state.team==="NOR";
-  if(isNor){
-    var fw = winProb("NOR","FRA");
-    var gr = state.groupResult;
-    return '<section class="nw-hero">'+
-      '<div class="nw-hero-tag">'+I("flag",13)+' Tonight · the fork</div>'+
-      '<div class="nw-hero-vs"><span class="nw-big-flag">🇳🇴</span>'+
-        '<div class="nw-vs-mid"><span class="nw-vs">Norway <i>vs</i> France</span>'+
-        '<span class="nw-vs-when">'+I("cal",14)+' Sat 27 Jun · <b>3:00 AM SGT</b> · Boston</span></div>'+
-        '<span class="nw-big-flag">🇫🇷</span></div>'+
-      '<p class="nw-hero-lead">You\'re already in the Round of 32 — beating Senegal saw to that. Tonight isn\'t about survival, it decides <b>who you steer into</b>. France leads on goal difference, so a <b>draw sends them top</b>: for Norway it\'s <b>win = 1st, draw or loss = 2nd</b>.</p>'+
-      '<div class="nw-fork">'+
-        '<div class="nw-fork-col win"><div class="nw-fork-h"><span class="dot"></span> WIN → top Group I</div>'+
-          '<div class="nw-fork-prob">'+Math.round(fw*100)+'%<small>model chance</small></div>'+
-          '<ul><li>'+I("check",13)+' R32 vs <b>Sweden</b> (Group F 3rd, proj.) — the soft landing</li>'+
-          '<li>'+I("check",13)+' dodges the Brazil / Germany half</li>'+
-          '<li>'+I("clock",13)+' R32 kicks off <b>5:00 AM SGT, Wed 1 Jul</b></li></ul></div>'+
-        '<div class="nw-fork-col lose"><div class="nw-fork-h"><span class="dot"></span> DRAW / LOSS → 2nd</div>'+
-          '<div class="nw-fork-prob">'+Math.round((1-fw)*100)+'%<small>model chance</small></div>'+
-          '<ul><li>'+I("swords",13)+' R32 vs <b>Ivory Coast</b> (Group E runner-up, proj.)</li>'+
-          '<li>'+I("swords",13)+' then likely <b>Brazil</b> (R16) and <b>Germany</b> (QF)</li>'+
-          '<li>'+I("clock",13)+' R32 kicks off <b>1:00 AM SGT, Wed 1 Jul</b></li></ul></div>'+
-      '</div>'+
-      '<div class="nw-decider"><span>Game\'s done? Lock it in:</span><div class="nw-deciderbtns">'+
-        '<button class="'+(gr==="first"?"on win":"")+'" data-act="g-first">Won → 1st</button>'+
-        '<button class="'+(gr==="second"?"on lose":"")+'" data-act="g-second">Drew / Lost → 2nd</button>'+
-        (gr?'<button class="ghost" data-act="g-reset">reset</button>':'')+
-      '</div></div></section>';
-  } else {
-    var t=TEAMS[state.team]; var g=teamGroupPos(state.team); var bp=g?g.pos:2;
-    var ord = state.posView===1?"1st":state.posView===3?"3rd":"2nd";
-    var decider = (bp===3)
-      ? '<div class="nw-decider"><span>Path assumes '+esc(t.n)+' grabs one of the eight best third-place spots — itself a projection.</span></div>'
-      : '<div class="nw-decider"><span>Assume finish:</span><div class="nw-deciderbtns">'+
-        '<button class="'+(state.posView===1?"on win":"")+'" data-act="pos-1">1st</button>'+
-        '<button class="'+(state.posView===2?"on lose":"")+'" data-act="pos-2">2nd</button></div></div>';
-    return '<section class="nw-hero solo">'+
-      '<div class="nw-hero-tag">'+I("flag",13)+' '+esc(t.n)+'\'s road</div>'+
-      '<div class="nw-hero-vs"><span class="nw-big-flag">'+t.f+'</span>'+
-        '<div class="nw-vs-mid"><span class="nw-vs">'+esc(t.n)+'</span>'+
-        '<span class="nw-vs-when">Projected to finish '+ord+' in Group '+(g?g.g:"?")+(bp===3?' · qualifying 3rd':'')+'</span></div></div>'+
-      '<p class="nw-hero-lead">'+(bp===3
-        ? 'Third-place qualification is a projection, so this whole road is conditional — but the kickoff <b>dates and SGT times</b> for each slot are exact.'
-        : 'Toggle the group finish to see how the draw — and your bedtime — changes. Past the next game, opponents are the most-likely bracket.')+'</p>'+
-      decider+'</section>';
+/* ---------------- bracket resolution (groups are done) ---------------- */
+function resolveSide(d){
+  if(d.t==="pos"){ var col=GROUP_SEEDS[d.g]; return col?col[d.p-1]:null; }
+  if(d.t==="third"){ var g=d.g3; return (g&&GROUP_SEEDS[g])?GROUP_SEEDS[g][2]:null; }
+  if(d.t==="win"){ return winnerOf(d.m); }
+  return null;
+}
+function slotTeams(m){ var s=SLOTS[m]; return [resolveSide(s.a), resolveSide(s.b)]; }
+function winnerOf(m){
+  if(state.results[m]) return state.results[m];          // confirmed result
+  var t=slotTeams(m); if(!t[0]||!t[1]) return null;
+  return ratingOf(t[0])>=ratingOf(t[1])?t[0]:t[1];        // model favourite
+}
+function slotConfirmed(m){                                 // both participants known (not projected)
+  var s=SLOTS[m];
+  function ok(d){ return d.t==="win" ? (state.results[d.m]!=null) : true; }
+  return ok(s.a)&&ok(s.b);
+}
+function teamR32Slot(code){
+  for(var m=73;m<=88;m++){ var t=slotTeams(m); if(t[0]===code||t[1]===code) return m; }
+  return null;
+}
+function nextMatchInfo(code){
+  var m=teamR32Slot(code);
+  if(!m) return {status:"out-group"};
+  while(m){
+    var dec=state.results[m];
+    if(dec==null){ var t=slotTeams(m); return {status:"next", m:m, opp:(t[0]===code?t[1]:t[0]), confirmed:slotConfirmed(m)}; }
+    if(dec!==code) return {status:"eliminated", m:m, by:dec};
+    var p=PARENT[m]; if(!p) return {status:"champion"};
+    m=p;
   }
+  return {status:"out-group"};
 }
 
-function railsHTML(){
-  var isNor = state.team==="NOR";
-  if(isNor){
-    var showF1 = state.groupResult!=="second"; // dream
-    var showF2 = state.groupResult!=="first";  // realistic
-    var out="";
-    if(showF2) out += railHTML("Realistic","finish 2nd — the Brazil/Germany road","amber", buildPath("NOR",2));
-    if(showF1) out += railHTML("Dream run","top the group — the softer half","red", buildPath("NOR",1));
-    return out;
-  } else {
-    var title = state.posView===1?"If they top the group":state.posView===3?"If they sneak through 3rd":"If they finish 2nd";
-    return railHTML(title,"projected bracket","red", buildPath(state.team, state.posView));
+/* ---------------- chosen team: just the next game ---------------- */
+function heroHTML(){
+  var code=state.team, t=TEAMS[code]||{n:code,f:"•"};
+  var info=nextMatchInfo(code);
+  var tag='<div class="nw-hero-tag">'+I("flag",13)+' Following · '+esc(t.n)+'</div>';
+  if(info.status==="champion"){
+    return '<section class="nw-hero solo champ">'+tag+
+      '<div class="nw-next"><span class="nw-big-flag">'+t.f+'</span>'+
+      '<div class="nw-vs-mid"><span class="nw-vs">'+esc(t.n)+' — Champions</span>'+
+      '<span class="nw-vs-when">'+I("trophy",14)+' Won the World Cup</span></div></div></section>';
   }
+  if(info.status==="eliminated"){
+    var sl=SLOTS[info.m];
+    return '<section class="nw-hero solo out">'+tag+
+      '<div class="nw-next"><span class="nw-big-flag" style="filter:grayscale(1);opacity:.55">'+t.f+'</span>'+
+      '<div class="nw-vs-mid"><span class="nw-vs">'+esc(t.n)+' — Out</span>'+
+      '<span class="nw-vs-when">'+I("flag",14)+' Lost to '+flagOf(info.by)+' '+esc(nameOf(info.by))+' in the '+ROUND_SHORT[sl.round]+'</span></div></div></section>';
+  }
+  if(info.status==="out-group"){
+    return '<section class="nw-hero solo out">'+tag+
+      '<p class="nw-hero-lead">'+esc(t.n)+' did not reach the knockout stage.</p></section>';
+  }
+  var sl=SLOTS[info.m], s=fmtSGT(sl.utc), v=sleepVerdict(s.hour);
+  var wp=Math.round(winProb(code, info.opp)*100);
+  var oppName=esc(nameOf(info.opp))+(info.confirmed?"":' <span class="nw-proj">(projected)</span>');
+  return '<section class="nw-hero solo next">'+tag+
+    '<div class="nw-next">'+
+      '<span class="nw-big-flag">'+t.f+'</span>'+
+      '<div class="nw-vs-mid"><span class="nw-vs">'+esc(t.n)+' <i>vs</i> '+oppName+'</span>'+
+        '<span class="nw-vs-when">'+I("cal",14)+' '+ROUND_SHORT[sl.round]+' · <b>'+s.time+'</b> '+s.weekday+' '+s.date+' SGT · '+esc(sl.venue)+'</span></div>'+
+      '<span class="nw-big-flag">'+flagOf(info.opp)+'</span>'+
+    '</div>'+
+    '<div class="nw-next-meta">'+
+      '<div class="nw-next-stat"><span class="nw-next-pct">'+wp+'%</span><small>win chance</small></div>'+
+      '<div class="nw-next-sleep '+v.tone+'">'+I(v.icon,16)+'<div><b>'+v.tag+'</b><span>'+v.blurb+'</span></div></div>'+
+    '</div></section>';
 }
-function sleepHTML(){
-  var isNor=state.team==="NOR"; var grid="";
-  if(isNor){
-    var showF1=state.groupResult!=="second", showF2=state.groupResult!=="first";
-    if(showF2) grid += sleepListHTML("If 2nd (realistic)", buildPath("NOR",2));
-    if(showF1) grid += sleepListHTML("If 1st (dream run)", buildPath("NOR",1));
-  } else {
-    grid = sleepListHTML(TEAMS[state.team].n+" — projected", buildPath(state.team, state.posView));
+
+/* ---------------- full bracket tree (always shown) ---------------- */
+var BK_COLS=[
+  {label:"Round of 32",    ms:[73,75,74,77,76,78,79,80,83,84,81,82,86,88,85,87]},
+  {label:"Round of 16",    ms:[89,90,91,92,93,94,95,96]},
+  {label:"Quarter-finals", ms:[97,98,99,100]},
+  {label:"Semi-finals",    ms:[101,102]},
+  {label:"Final",          ms:[103]}
+];
+function bracketMatchHTML(m){
+  var sl=SLOTS[m], t=slotTeams(m), dec=state.results[m], s=fmtSGT(sl.utc), v=sleepVerdict(s.hour);
+  var sel=state.team, involves=(t[0]===sel||t[1]===sel);
+  var proj=!slotConfirmed(m) && !dec;
+  function row(code){
+    if(!code) return '<div class="bk-row tbd"><span class="bk-cd">TBD</span></div>';
+    var win=dec===code, lose=dec&&dec!==code, me=code===sel;
+    return '<div class="bk-row'+(win?' win':'')+(lose?' lose':'')+(me?' me':'')+'">'+
+      '<span class="bk-fl">'+flagOf(code)+'</span><span class="bk-cd">'+esc(code)+'</span>'+
+      (win?'<span class="bk-chk">'+I("check",11)+'</span>':'')+'</div>';
   }
-  return '<section class="nw-sleep"><h2>'+I("bed",18)+' Mornings to protect</h2>'+
-    '<p class="nw-sleep-lead">Matches end roughly two hours after kickoff. <span class="chip locked">Likely</span> = more probable than not you\'ll be up for it. <span class="chip bonus">Dream-run</span> = only if the run keeps going.</p>'+
-    '<div class="nw-sleep-grid">'+grid+'</div></section>';
+  return '<div class="bk-match'+(involves?' hot':'')+(proj?' proj':'')+'">'+
+    '<div class="bk-when"><span class="bk-dot" data-tone="'+v.tone+'"></span>'+s.time+' · '+s.weekday+' '+s.date+'</div>'+
+    row(t[0])+row(t[1])+'</div>';
+}
+function bracketHTML(){
+  var cols=BK_COLS.map(function(c){
+    var cells=c.ms.map(function(m){ return '<div class="bk-cell">'+bracketMatchHTML(m)+'</div>'; }).join("");
+    return '<div class="bk-round"><div class="bk-rhead">'+c.label+'</div><div class="bk-col">'+cells+'</div></div>';
+  }).join("");
+  return '<section class="nw-bracket"><h2>'+I("trophy",18)+' Full bracket · all times SGT</h2>'+
+    '<p class="nw-bracket-lead">Every knockout tie with its kickoff and a <b>sleep tint</b>. Confirmed winners fill in live as games finish; ties still to come show the model favourite in muted text. <b>'+esc((TEAMS[state.team]||{}).n||state.team)+'</b> is highlighted — scroll sideways for the later rounds.</p>'+
+    '<div class="bk-scroll"><div class="bk">'+cols+'</div></div></section>';
 }
 
 function renderDyn(){
-  document.getElementById("dyn").innerHTML = heroHTML() + '<div class="nw-rails">'+railsHTML()+'</div>' + sleepHTML();
+  document.getElementById("dyn").innerHTML = heroHTML();
+  var b=document.getElementById("bracket"); if(b) b.innerHTML = bracketHTML();
 }
 function renderPanel(){
   var wrap=document.getElementById("ratingsWrap");
@@ -529,12 +608,13 @@ function buildShell(){
         '<div class="nw-select-box"><span class="nw-flag" id="brandFlag"></span>'+
           '<select id="teamSelect">'+selectOptions()+'</select><span class="nw-chev">'+I("chevron",16)+'</span></div></label></div>'+
     '</header>'+
-    '<div class="nw-asof"><span id="livePill" class="nw-live" style="display:none"></span>Snapshot: <strong>Fri 26 Jun 2026</strong>, group stage almost done. Opponents past the next match — and which third-placed teams qualify and where they slot in — are <em>projected</em> and sharpen as results land.</div>'+
+    '<div class="nw-asof"><span id="livePill" class="nw-live" style="display:none"></span>Group stage <strong>complete</strong> — the knockouts are underway. Results fill in <em>live</em> from the market; past a team\'s next game, opponents are the model favourite. All times SGT.</div>'+
     '<div id="dyn"></div>'+
     '<section class="nw-tools"><button class="nw-acc" data-act="toggle-ratings">'+I("shield",15)+' Tune team strength '+I("chevron",15)+'</button><div id="ratingsWrap"></div></section>'+
+    '<div id="bracket"></div>'+
     '<footer class="nw-foot">'+
       '<p><b>How the numbers work.</b> Win chances come from rating gaps (logistic / Elo). Projected opponents are the favourite of each opposing bracket region — they get fuzzier deeper in, so treat semi/final names as placeholders. With <code>wc-data.json</code> present, ratings are calibrated to live market title odds.</p>'+
-      '<p><b>Keeping it current.</b> Tap a match\'s <b>Won / Lost</b> as it finishes (and the France result up top) — the path, odds and sleep list redraw and save in this browser. If a <code>wc-data.json</code> sits next to this file (written by <code>wc_sync.py</code>), it auto-loads on open. To put this online, drop both files on any static host (GitHub Pages, Netlify drop, Vercel).</p>'+
+      '<p><b>Keeping it current.</b> Results come from the betting market — when a team is priced at essentially 100% to reach the next round, it has won, and the bracket fills in automatically. The <code>wc-data.json</code> next to this file (written by <code>wc_sync.py</code>) refreshes on a schedule and auto-loads on open. To put this online, drop both files on any static host (GitHub Pages, Netlify drop, Vercel).</p>'+
       '<p class="nw-fine">Times converted from FIFA\'s published ET (EDT, UTC−4) to SGT (UTC+8). Group seeds are projected where the group stage hasn\'t finished. Market data is used as a probability signal only — not betting advice. Heia Norge. 🇳🇴</p>'+
     '</footer>';
 }
