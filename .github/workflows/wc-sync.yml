@@ -6,7 +6,7 @@ name: wc-sync
 
 on:
   schedule:
-    - cron: "*/30 * * * *"    # every 30 min during the knockouts (GitHub may delay/skip). Revert to "0 */3 * * *" after the final.
+    - cron: "*/15 * * * *"    # every 15 min during the knockouts (GitHub may delay/skip). Revert to "0 */3 * * *" after the final.
   workflow_dispatch: {}        # adds a "Run workflow" button on the Actions tab
 
 permissions:
