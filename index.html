@@ -43,6 +43,7 @@ body{
 .nw-flag{font-size:18px;line-height:1}
 .nw-select select{appearance:none;background:transparent;border:0;color:var(--ice);font-family:var(--head);font-weight:700;font-size:14.5px;height:100%;padding-right:4px;outline:none;cursor:pointer;max-width:52vw}
 .nw-select option,.nw-select optgroup{background:var(--mid2);color:var(--ice)}
+.nw-select option.opt-out{color:var(--faint)}
 .nw-chev{position:absolute;right:11px;color:var(--dim);pointer-events:none;display:flex}
 .nw-asof{font-size:12.5px;color:var(--dim);margin:6px 0 18px;max-width:780px}
 .nw-asof em{color:var(--frost);font-style:normal;font-weight:600}.nw-asof strong{color:var(--ice)}
@@ -602,16 +603,18 @@ function renderPanel(){
 }
 
 /* ---------------- shell + events ---------------- */
+function isAlive(code){ var s=nextMatchInfo(code).status; return s==="next"||s==="champion"; }
 function selectOptions(){
-  var opts="";
-  Object.keys(GROUP_SEEDS).forEach(function(g){
-    opts += '<optgroup label="Group '+g+'">';
-    var picks = GROUP_SEEDS[g].slice(0,2);
-    if(THIRD_QUAL.indexOf(g)>=0 && GROUP_SEEDS[g][2]) picks.push(GROUP_SEEDS[g][2]);
-    picks.forEach(function(c, idx){ if(!TEAMS[c]) return; opts += '<option value="'+c+'">'+TEAMS[c].f+' '+TEAMS[c].n+(idx===2?' · 3rd (proj.)':'')+'</option>'; });
-    opts += '</optgroup>';
-  });
-  return opts;
+  var field=[];                                  // the 32 knockout teams
+  for(var m=73;m<=88;m++){ var t=slotTeams(m); if(t[0])field.push(t[0]); if(t[1])field.push(t[1]); }
+  field=field.filter(function(c){return TEAMS[c];});
+  var alive=field.filter(isAlive), out=field.filter(function(c){return !isAlive(c);});
+  var byR=function(a,b){ return ratingOf(b)-ratingOf(a); };
+  alive.sort(byR); out.sort(byR);
+  function opt(c,dim){ return '<option value="'+c+'"'+(dim?' class="opt-out"':'')+'>'+TEAMS[c].f+' '+esc(TEAMS[c].n)+(dim?' · out':'')+'</option>'; }
+  var s='<optgroup label="Still in ('+alive.length+')">'+alive.map(function(c){return opt(c,false);}).join('')+'</optgroup>';
+  if(out.length) s+='<optgroup label="Knocked out">'+out.map(function(c){return opt(c,true);}).join('')+'</optgroup>';
+  return s;
 }
 function rebuildSelect(){
   var sel=document.getElementById("teamSelect"); if(!sel) return;
