@@ -266,7 +266,18 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:4px;z-index:4
 /* chosen team flies the flag: red highlight instead of blue */
 .bk-match.hot{border-color:var(--nred);box-shadow:0 0 0 1px rgba(239,43,45,.5)}
 .bk-row.me{box-shadow:inset 3px 0 0 var(--nred)}
-.nw-hero.solo.next .nw-hero-tag,.nw-hero.solo.champ .nw-hero-tag{background:linear-gradient(90deg,rgba(239,43,45,.18),rgba(10,58,163,.18));border-color:rgba(255,255,255,.2);color:#fff}
+.nw-hero.solo.next,.nw-hero.solo.champ{background:linear-gradient(150deg,#d81529 0%,#9e0f1e 48%,#141a30 100%);border-color:rgba(239,43,45,.5);box-shadow:0 26px 60px -28px rgba(186,12,47,.65)}
+.nw-hero.solo.next .nw-hero-tag,.nw-hero.solo.champ .nw-hero-tag{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.42);color:#fff}
+.nw-hero.solo.next .nw-vs,.nw-hero.solo.champ .nw-vs{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+.nw-hero.solo.next .nw-vs i{color:rgba(255,255,255,.6)}
+.nw-hero.solo.next .nw-vs-when{color:rgba(255,255,255,.86)}
+.nw-hero.solo.next .nw-vs-when b{color:#ffd23e}
+.nw-hero.solo.next .nw-proj{color:rgba(255,255,255,.62)}
+.nw-hero.solo.next .nw-next-meta{border-top-color:rgba(255,255,255,.2)}
+.nw-hero.solo.next .nw-next-pct{color:#fff}
+.nw-hero.solo.next .nw-next-stat small{color:rgba(255,255,255,.72)}
+.nw-hero.solo.next .nw-next-sleep{background:rgba(4,8,20,.58);border-color:rgba(255,255,255,.22)}
+.nw-hero.solo.next .nw-next-sleep span{color:rgba(255,255,255,.82)}
 
 @media (max-width:620px){
   .nw-fork{grid-template-columns:1fr}
