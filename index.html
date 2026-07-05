@@ -263,21 +263,21 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:4px;z-index:4
 .nw-heia{display:inline-flex;align-items:center;gap:7px;margin-top:7px;font-family:var(--head);font-weight:800;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#fff;
   background:linear-gradient(90deg,rgba(239,43,45,.24),rgba(10,58,163,.24));border:1px solid rgba(255,255,255,.22);padding:4px 10px;border-radius:999px}
 .nw-heia .norflag{width:18px;height:auto;border-radius:2px}
-/* chosen team flies the flag: red highlight instead of blue */
-.bk-match.hot{border-color:var(--nred);box-shadow:0 0 0 1px rgba(239,43,45,.5)}
-.bk-row.me{box-shadow:inset 3px 0 0 var(--nred)}
-.nw-hero.solo.next,.nw-hero.solo.champ{background:linear-gradient(150deg,#d81529 0%,#9e0f1e 48%,#141a30 100%);border-color:rgba(239,43,45,.5);box-shadow:0 26px 60px -28px rgba(186,12,47,.65)}
-.nw-hero.solo.next .nw-hero-tag,.nw-hero.solo.champ .nw-hero-tag{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.42);color:#fff}
-.nw-hero.solo.next .nw-vs,.nw-hero.solo.champ .nw-vs{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.35)}
-.nw-hero.solo.next .nw-vs i{color:rgba(255,255,255,.6)}
-.nw-hero.solo.next .nw-vs-when{color:rgba(255,255,255,.86)}
-.nw-hero.solo.next .nw-vs-when b{color:#ffd23e}
-.nw-hero.solo.next .nw-proj{color:rgba(255,255,255,.62)}
-.nw-hero.solo.next .nw-next-meta{border-top-color:rgba(255,255,255,.2)}
-.nw-hero.solo.next .nw-next-pct{color:#fff}
-.nw-hero.solo.next .nw-next-stat small{color:rgba(255,255,255,.72)}
-.nw-hero.solo.next .nw-next-sleep{background:rgba(4,8,20,.58);border-color:rgba(255,255,255,.22)}
-.nw-hero.solo.next .nw-next-sleep span{color:rgba(255,255,255,.82)}
+/* Norway only: red next-match card + red bracket highlight (other teams stay neutral) */
+.bk.nor .bk-match.hot{border-color:var(--nred);box-shadow:0 0 0 1px rgba(239,43,45,.5)}
+.bk.nor .bk-row.me{box-shadow:inset 3px 0 0 var(--nred)}
+.nw-hero.solo.next.nor,.nw-hero.solo.champ.nor{background:linear-gradient(150deg,#d81529 0%,#9e0f1e 48%,#141a30 100%);border-color:rgba(239,43,45,.5);box-shadow:0 26px 60px -28px rgba(186,12,47,.65)}
+.nw-hero.solo.next.nor .nw-hero-tag,.nw-hero.solo.champ.nor .nw-hero-tag{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.42);color:#fff}
+.nw-hero.solo.next.nor .nw-vs,.nw-hero.solo.champ.nor .nw-vs{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+.nw-hero.solo.next.nor .nw-vs i{color:rgba(255,255,255,.6)}
+.nw-hero.solo.next.nor .nw-vs-when{color:rgba(255,255,255,.86)}
+.nw-hero.solo.next.nor .nw-vs-when b{color:#ffd23e}
+.nw-hero.solo.next.nor .nw-proj{color:rgba(255,255,255,.62)}
+.nw-hero.solo.next.nor .nw-next-meta{border-top-color:rgba(255,255,255,.2)}
+.nw-hero.solo.next.nor .nw-next-pct{color:#fff}
+.nw-hero.solo.next.nor .nw-next-stat small{color:rgba(255,255,255,.72)}
+.nw-hero.solo.next.nor .nw-next-sleep{background:rgba(4,8,20,.58);border-color:rgba(255,255,255,.22)}
+.nw-hero.solo.next.nor .nw-next-sleep span{color:rgba(255,255,255,.82)}
 
 @media (max-width:620px){
   .nw-fork{grid-template-columns:1fr}
@@ -474,9 +474,10 @@ function nextMatchInfo(code){
 function heroHTML(){
   var code=state.team, t=TEAMS[code]||{n:code,f:"•"};
   var info=nextMatchInfo(code);
+  var nor=(code==="NOR")?" nor":"";   // red flag treatment only when following Norway
   var tag='<div class="nw-hero-tag">'+I("flag",13)+' Following · '+esc(t.n)+'</div>';
   if(info.status==="champion"){
-    return '<section class="nw-hero solo champ">'+tag+
+    return '<section class="nw-hero solo champ'+nor+'">'+tag+
       '<div class="nw-next"><span class="nw-big-flag">'+t.f+'</span>'+
       '<div class="nw-vs-mid"><span class="nw-vs">'+esc(t.n)+' — Champions</span>'+
       '<span class="nw-vs-when">'+I("trophy",14)+' Won the World Cup</span></div></div></section>';
@@ -495,7 +496,7 @@ function heroHTML(){
   var sl=SLOTS[info.m], s=fmtSGT(sl.utc), v=sleepVerdict(s.hour);
   var wp=Math.round(winProb(code, info.opp)*100);
   var oppName=esc(nameOf(info.opp))+(info.confirmed?"":' <span class="nw-proj">(projected)</span>');
-  return '<section class="nw-hero solo next">'+tag+
+  return '<section class="nw-hero solo next'+nor+'">'+tag+
     '<div class="nw-next">'+
       '<span class="nw-big-flag">'+t.f+'</span>'+
       '<div class="nw-vs-mid"><span class="nw-vs">'+esc(t.n)+' <i>vs</i> '+oppName+'</span>'+
@@ -538,7 +539,7 @@ function bracketHTML(){
   }).join("");
   return '<section class="nw-bracket"><h2>'+I("trophy",18)+' Full bracket · all times SGT</h2>'+
     '<p class="nw-bracket-lead">Every knockout tie with its kickoff and a <b>sleep tint</b>. Confirmed winners fill in live as games finish; ties still to come show the model favourite in muted text. <b>'+esc((TEAMS[state.team]||{}).n||state.team)+'</b> is highlighted — scroll sideways for the later rounds.</p>'+
-    '<div class="bk-scroll"><div class="bk">'+cols+'</div></div></section>';
+    '<div class="bk-scroll"><div class="bk'+(state.team==="NOR"?" nor":"")+'">'+cols+'</div></div></section>';
 }
 
 /* ---------------- forward projection: the chosen team's road ---------------- */
