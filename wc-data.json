@@ -1,7 +1,6 @@
 {
-  "asOf": "07 Jul 2026 20:22 UTC",
+  "asOf": "07 Jul 2026 21:50 UTC",
   "sources": {
-    "titleOdds": "polymarket",
     "knockoutResults": "polymarket"
   },
   "teams": {
@@ -53,7 +52,7 @@
     "MAR": {
       "n": "Morocco",
       "f": "🇲🇦",
-      "r": 1898
+      "r": 1945
     },
     "HAI": {
       "n": "Haiti",
@@ -128,7 +127,7 @@
     "BEL": {
       "n": "Belgium",
       "f": "🇧🇪",
-      "r": 1884
+      "r": 1945
     },
     "EGY": {
       "n": "Egypt",
@@ -148,7 +147,7 @@
     "ESP": {
       "n": "Spain",
       "f": "🇪🇸",
-      "r": 2048
+      "r": 2095
     },
     "CPV": {
       "n": "Cabo Verde",
@@ -168,12 +167,12 @@
     "NOR": {
       "n": "Norway",
       "f": "🇳🇴",
-      "r": 1959
+      "r": 1945
     },
     "FRA": {
       "n": "France",
       "f": "🇫🇷",
-      "r": 2116
+      "r": 2045
     },
     "SEN": {
       "n": "Senegal",
@@ -188,7 +187,7 @@
     "ARG": {
       "n": "Argentina",
       "f": "🇦🇷",
-      "r": 2047
+      "r": 2060
     },
     "ALG": {
       "n": "Algeria",
@@ -223,12 +222,12 @@
     "COL": {
       "n": "Colombia",
       "f": "🇨🇴",
-      "r": 1958
+      "r": 1935
     },
     "ENG": {
       "n": "England",
       "f": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "r": 2032
+      "r": 2025
     },
     "CRO": {
       "n": "Croatia",
@@ -353,28 +352,17 @@
     "94": "ENG",
     "95": "ARG"
   },
-  "marketTitle": {
-    "ESP": 0.1871,
-    "ENG": 0.1542,
-    "FRA": 0.3288,
-    "ARG": 0.1702,
-    "BEL": 0.0245,
-    "COL": 0.0364,
-    "NOR": 0.0604,
-    "MAR": 0.0284,
-    "EGY": 0.0005,
-    "SUI": 0.0095
-  },
+  "marketTitle": {},
   "modelTitle": {
-    "FRA": 0.328,
-    "ESP": 0.184,
-    "ARG": 0.1795,
-    "ENG": 0.1466,
-    "NOR": 0.0631,
-    "COL": 0.0356,
-    "MAR": 0.026,
-    "BEL": 0.0248,
-    "SUI": 0.0123
+    "ESP": 0.2655,
+    "ARG": 0.2138,
+    "FRA": 0.1739,
+    "ENG": 0.1468,
+    "NOR": 0.0563,
+    "BEL": 0.0513,
+    "MAR": 0.0508,
+    "COL": 0.028,
+    "SUI": 0.0137
   },
   "matchOdds": {}
 }
