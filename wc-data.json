@@ -1,5 +1,5 @@
 {
-  "asOf": "14 Jul 2026 20:35 UTC",
+  "asOf": "14 Jul 2026 21:35 UTC",
   "sources": {
     "knockoutResults": "polymarket"
   },
@@ -355,14 +355,14 @@
     "97": "FRA",
     "98": "ESP",
     "99": "ENG",
-    "100": "ARG"
+    "100": "ARG",
+    "101": "ESP"
   },
   "marketTitle": {},
   "modelTitle": {
-    "ESP": 0.3249,
-    "ARG": 0.2638,
-    "FRA": 0.2167,
-    "ENG": 0.1946
+    "ESP": 0.5723,
+    "ARG": 0.2482,
+    "ENG": 0.1795
   },
   "matchOdds": {}
 }
